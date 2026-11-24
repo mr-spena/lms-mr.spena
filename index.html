@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mr.spena English Class — SMP Negeri 6 Blitar</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans (Clean Modern EdTech UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            surface: '#F4F7FB',
+            brand: {
+              50: '#EFF6FF',
+              100: '#DBEAFE',
+              500: '#3B82F6',
+              600: '#2563EB',
+              700: '#1D4ED8',
+              hero: '#2B72E6',
+            }
+          },
+          boxShadow: {
+            'soft': '0 2px 12px -2px rgba(15, 23, 42, 0.06), 0 1px 4px -1px rgba(15, 23, 42, 0.04)',
+            'card-hover': '0 10px 25px -5px rgba(37, 99, 235, 0.12), 0 4px 10px -4px rgba(15, 23, 42, 0.06)',
+            'nav': '0 -4px 20px -2px rgba(15, 23, 42, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: #F4F7FB;
+      color: #1E293B;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatSoft {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSoft 3s ease-in-out infinite;
+    }
+
+    /* 3D Flip Flashcards */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.is-flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+
+    .word-tile {
+      transition: transform 0.12s ease, background-color 0.15s ease, border-color 0.15s ease;
+      user-select: none;
+    }
+    .word-tile:active {
+      transform: scale(0.96);
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-surface text-slate-800 min-h-screen antialiased">
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-[calc(100%-2rem)] pointer-events-none"></div>
+
+  <!-- ==================== CUSTOM MODAL (PENGGANTI alert/confirm) ==================== -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 fade-in">
+      <div class="flex items-start gap-3.5">
+        <div id="modal-icon" class="shrink-0 w-11 h-11 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center text-xl">
+          ℹ️
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 id="modal-title" class="text-base font-extrabold text-slate-900 leading-snug">Konfirmasi</h3>
+          <p id="modal-message" class="text-sm text-slate-600 mt-1.5 leading-relaxed"></p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button id="modal-cancel-btn" type="button"
+                class="min-h-[44px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+          Batal
+        </button>
+        <button id="modal-confirm-btn" type="button"
+                class="min-h-[44px] px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition">
+          Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 1. HALAMAN LOGIN / IDENTITAS AWAL ==================== -->
+  <section id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-[#EBF3FF] via-[#F4F7FB] to-[#F4F7FB]">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-soft border border-slate-200 p-6 sm:p-8 fade-in">
+      <!-- Branding Header -->
+      <div class="flex flex-col items-center text-center mb-6">
+        <div id="login-logo-slot" class="w-20 h-20 rounded-2xl bg-blue-50 border border-blue-100 p-1.5 flex items-center justify-center mb-3 shadow-xs"></div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-brand-600 text-[11px] font-bold tracking-wide mb-2">
+          <span>SMP Negeri 6 Blitar</span>
+          <span>•</span>
+          <span>TP 2026/2027</span>
+        </div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Mr.spena English Class</h1>
+        <p class="text-sm text-slate-500 mt-1">Bahasa Inggris Kelas IX • Persiapan SAS Semester 1</p>
+      </div>
+
+      <!-- Info Badges -->
+      <div class="grid grid-cols-3 gap-2 mb-6">
+        <div class="bg-[#F8FAFC] border border-slate-200/80 rounded-xl p-2.5 text-center">
+          <div class="text-xs font-extrabold text-brand-600">4 Modul</div>
+          <div class="text-[11px] text-slate-500 font-medium mt-0.5">Interaktif</div>
+        </div>
+        <div class="bg-[#F8FAFC] border border-slate-200/80 rounded-xl p-2.5 text-center">
+          <div class="text-xs font-extrabold text-emerald-600">100 Soal</div>
+          <div class="text-[11px] text-slate-500 font-medium mt-0.5">Variatif</div>
+        </div>
+        <div class="bg-[#F8FAFC] border border-slate-200/80 rounded-xl p-2.5 text-center">
+          <div class="text-xs font-extrabold text-amber-600">±2 Jam</div>
+          <div class="text-[11px] text-slate-500 font-medium mt-0.5">Estimasi</div>
+        </div>
+      </div>
+
+      <!-- Form Identitas Siswa -->
+      <form id="login-form" class="space-y-4" novalidate>
+        <div>
+          <label for="input-name" class="block text-sm font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
+          <input id="input-name" type="text" required placeholder="Contoh: Nabila Putri Ramadhani"
+                 class="w-full min-h-[48px] px-4 py-3 rounded-xl border border-slate-300 bg-white text-[15px] font-medium text-slate-900 focus:border-brand-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="input-class" class="block text-sm font-bold text-slate-700 mb-1.5">Kelas</label>
+            <select id="input-class" required
+                    class="w-full min-h-[48px] px-3.5 py-3 rounded-xl border border-slate-300 bg-white text-[15px] font-semibold text-slate-900 focus:border-brand-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition">
+              <option value="">Pilih Kelas</option>
+              <option value="IX-A">IX-A</option>
+              <option value="IX-B">IX-B</option>
+              <option value="IX-C">IX-C</option>
+              <option value="IX-D">IX-D</option>
+              <option value="IX-E">IX-E</option>
+              <option value="IX-F">IX-F</option>
+              <option value="IX-G">IX-G</option>
+              <option value="IX-H">IX-H</option>
+            </select>
+          </div>
+          <div>
+            <label for="input-absen" class="block text-sm font-bold text-slate-700 mb-1.5">No. Absen</label>
+            <input id="input-absen" type="number" min="1" max="32" required placeholder="1 - 32"
+                   class="w-full min-h-[48px] px-3.5 py-3 rounded-xl border border-slate-300 bg-white text-[15px] font-semibold text-slate-900 focus:border-brand-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition" />
+          </div>
+        </div>
+
+        <!-- Pesan Validasi Inline -->
+        <div id="login-error" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3.5 py-2.5"></div>
+
+        <button type="submit"
+                class="w-full min-h-[50px] bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-[15px] rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+          <span>Masuk ke Kelas</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <span>Guru: <strong class="text-slate-700">Mr. Feri</strong></span>
+        <span class="text-emerald-600 font-semibold">● Tersimpan Otomatis</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. SHELL UTAMA APLIKASI (SMART CLASS STYLE) ==================== -->
+  <div id="app-shell" class="hidden min-h-screen flex bg-surface">
+
+    <!-- DESKTOP LEFT SIDEBAR (>= 1024px) -->
+    <aside class="hidden lg:flex lg:flex-col w-72 shrink-0 bg-white border-r border-slate-200 sticky top-0 h-screen overflow-y-auto">
+      <!-- Sidebar Brand -->
+      <div class="px-5 py-5 border-b border-slate-100 flex items-center gap-3">
+        <div id="sidebar-logo-slot" class="w-10 h-10 shrink-0 rounded-xl bg-blue-50 border border-blue-100 p-1 flex items-center justify-center"></div>
+        <div class="min-w-0">
+          <div class="text-base font-extrabold text-brand-600 leading-tight truncate">Mr.spena</div>
+          <div class="text-[11px] font-bold text-slate-500 truncate">English Class • SMPN 6</div>
+        </div>
+      </div>
+
+      <!-- Student Profile Card (Smart Class Style) -->
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex items-center gap-3 mb-3.5">
+          <div id="sidebar-avatar" class="w-11 h-11 rounded-full bg-blue-100 text-brand-700 font-extrabold text-sm flex items-center justify-center shrink-0 border-2 border-white shadow-xs">
+            S
+          </div>
+          <div class="min-w-0">
+            <div id="sidebar-student-name" class="text-sm font-extrabold text-slate-900 truncate">Siswa</div>
+            <div id="sidebar-student-meta" class="text-xs font-medium text-slate-500 truncate">IX-A • Absen 1</div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <button type="button" onclick="confirmChangeAccount()"
+                  class="w-full min-h-[38px] px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center justify-between transition">
+            <span>Profil / Ganti Akun</span>
+            <span class="text-slate-400">👤</span>
+          </button>
+          <button type="button" onclick="confirmChangeAccount()"
+                  class="w-full min-h-[38px] px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-xs font-bold text-slate-700 flex items-center justify-between transition">
+            <span>Keluar</span>
+            <span class="text-slate-400">↪</span>
+          </button>
+        </div>
+
+        <!-- Progress Indicator Bar -->
+        <div class="mt-4 pt-3.5 border-t border-slate-100">
+          <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+            <span class="text-slate-600">Progres Belajar</span>
+            <span id="sidebar-progress-pct" class="text-brand-600">0%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div id="sidebar-progress-bar" class="h-full bg-brand-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <div id="sidebar-progress-text" class="text-[11px] text-slate-400 font-medium mt-1">0 dari 100 soal terjawab</div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav id="desktop-sidebar-nav" class="p-3 space-y-1 flex-1"></nav>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+        SMP Negeri 6 Blitar • Mr. Feri
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT COLUMN -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- MOBILE STICKY TOP BAR (< 1024px) -->
+      <header class="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div id="mobile-logo-slot" class="w-9 h-9 shrink-0 rounded-xl bg-blue-50 border border-blue-100 p-0.5 flex items-center justify-center"></div>
+          <div class="min-w-0">
+            <div class="text-sm font-extrabold text-brand-600 leading-tight truncate">Mr.spena English Class</div>
+            <div class="text-[11px] font-semibold text-slate-500 truncate">SMP Negeri 6 Blitar</div>
+          </div>
+        </div>
+        <button type="button" onclick="confirmChangeAccount()" title="Profil Siswa"
+                class="shrink-0 flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-slate-100 border border-slate-200 active:scale-95 transition">
+          <span id="mobile-avatar" class="w-7 h-7 rounded-full bg-brand-600 text-white text-xs font-extrabold flex items-center justify-center">S</span>
+          <span id="mobile-student-badge" class="text-xs font-bold text-slate-700 max-w-[90px] truncate">IX-A</span>
+        </button>
+      </header>
+
+      <!-- DYNAMIC WORKSPACE (Beranda / Modul / Rekap Nilai) -->
+      <main id="main-workspace" class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-7 pb-28 lg:pb-12"></main>
+    </div>
+
+    <!-- MOBILE FIXED BOTTOM NAVIGATION BAR (< 1024px) -->
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 shadow-nav">
+      <div class="grid grid-cols-3 h-16 max-w-md mx-auto">
+        <button id="bnav-dashboard" type="button" onclick="navigateTo('dashboard')"
+                class="flex flex-col items-center justify-center gap-0.5 text-xs font-bold transition">
+          <span class="text-lg leading-none">🏠</span>
+          <span>Beranda</span>
+        </button>
+        <button id="bnav-module" type="button" onclick="navigateTo('module')"
+                class="flex flex-col items-center justify-center gap-0.5 text-xs font-bold transition">
+          <span class="text-lg leading-none">📘</span>
+          <span>Belajar</span>
+        </button>
+        <button id="bnav-recap" type="button" onclick="handleRecapNavClick()"
+                class="flex flex-col items-center justify-center gap-0.5 text-xs font-bold transition">
+          <span class="text-lg leading-none">🏆</span>
+          <span>Nilai</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- CONFETTI CANVAS (Hanya aktif di halaman Rekap Nilai) -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-40"></canvas>
+
+  <!-- ==================== SCRIPT APLIKASI MR.SPENA ENGLISH CLASS ==================== -->
+  <script>
+    // =========================================================================
+    // 1. KONFIGURASI UTAMA (UBAH NOMOR WA MR. FERI DI SINI SEBELUM DEPLOY!)
+    // =========================================================================
+    const CONFIG = {
+      waNumber: "6281234567890", // <-- GANTI nomor WA Mr. Feri (format 628..., tanpa + atau 0)
+      teacherName: "Mr. Feri",
+      lmsName: "Mr.spena English Class",
+      schoolName: "SMP Negeri 6 Blitar",
+      questionsPerPage: 10,
+      kahootUrl: "https://kahoot.it/",
+      quizizzUrl: "https://quizizz.com/join"
+    };
+
+    const STORAGE_KEY = "mrspena_lms_clean_v1";
+
+    // =========================================================================
+    // 2. LOGO RESMI SMP NEGERI 6 BLITAR (logo.jpg + SVG FALLBACK)
+    // =========================================================================
+    function renderSchoolLogo(uid) {
+      return `
+        <img src="logo.jpg" alt="Logo SMP Negeri 6 Blitar"
+             class="w-full h-full object-contain rounded-lg"
+             onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');" />
+        <svg viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg"
+             class="hidden w-full h-full" aria-label="Logo SMP Negeri 6 Kota Blitar">
+          <defs>
+            <path id="arc-${uid}" d="M 38,118 A 74,84 0 0,1 182,118" />
+          </defs>
+          <ellipse cx="110" cy="130" rx="102" ry="122" fill="#3B0A57" />
+          <ellipse cx="110" cy="130" rx="95" ry="115" fill="#FFFFFF" />
+          <ellipse cx="110" cy="130" rx="90" ry="110" fill="#008BE6" />
+          <text fill="#FFFFFF" font-family="Plus Jakarta Sans, Arial, sans-serif" font-weight="800" font-size="21" letter-spacing="1.1">
+            <textPath href="#arc-${uid}" startOffset="50%" text-anchor="middle">SMP NEGERI 6</textPath>
+          </text>
+          <path d="M110,55 C100,71 95,84 102,96 C105,101 115,101 118,96 C125,84 120,71 110,55 Z" fill="#F97316" stroke="#3B0A57" stroke-width="3.2" stroke-linejoin="round" />
+          <path d="M110,66 C104,77 102,87 106,94 C108,97 112,97 114,94 C118,87 116,77 110,66 Z" fill="#FDE047" stroke="#FFFFFF" stroke-width="1.6" />
+          <polygon points="99,98 121,98 117,196 103,196" fill="#FACC15" stroke="#3B0A57" stroke-width="3" stroke-linejoin="round" />
+          <path d="M110,126 C92,114 68,114 56,118 L62,160 C78,156 96,158 110,168 C124,158 142,156 158,160 L164,118 C152,114 128,114 110,126 Z"
+                fill="#FFFFFF" stroke="#3B0A57" stroke-width="3.2" stroke-linejoin="round" />
+          <line x1="110" y1="126" x2="110" y2="168" stroke="#3B0A57" stroke-width="2.5" />
+          <path d="M68,128 Q86,125 101,132 M70,138 Q86,135 101,142 M72,148 Q86,145 101,152" fill="none" stroke="#3B0A57" stroke-width="2.3" stroke-linecap="round" />
+          <path d="M152,128 Q134,125 119,132 M150,138 Q134,135 119,142 M148,148 Q134,145 119,152" fill="none" stroke="#3B0A57" stroke-width="2.3" stroke-linecap="round" />
+          <path d="M64,186 Q110,164 156,186 L149,198 Q110,178 71,198 Z" fill="#DC2626" stroke="#3B0A57" stroke-width="2.8" stroke-linejoin="round" />
+          <path d="M71,198 Q110,178 149,198 L143,207 Q110,189 77,207 Z" fill="#FFFFFF" stroke="#3B0A57" stroke-width="2.8" stroke-linejoin="round" />
+          <text x="110" y="226" text-anchor="middle" fill="#FFFFFF" font-family="Plus Jakarta Sans, Arial, sans-serif" font-weight="800" font-size="18.5" letter-spacing="0.8">
+            KOTA BLITAR
+          </text>
+        </svg>
+      `;
+    }
+
+    // =========================================================================
+    // 3. DATA 4 MODUL & 100 SOAL INTERAKTIF LENGKAP (SESUAI KISI-KISI SAS 1)
+    // =========================================================================
+    const MODULES = [
+      // -----------------------------------------------------------------------
+      // MODUL 1: DESCRIPTIVE TEXT (30 SOAL: ID 1 - 30)
+      // -----------------------------------------------------------------------
+      {
+        id: 0,
+        code: "Modul 1",
+        shortTitle: "Descriptive Text",
+        title: "Descriptive Text (Hewan, Benda, Tempat)",
+        desc: "Komodo Dragon, Borobudur Temple & Orangutan",
+        estimate: "±35 Menit",
+        icon: "🦎",
+        badgeBg: "bg-[#FEF3C7]",
+        badgeText: "text-[#D97706]",
+        barColor: "bg-amber-500",
+        videoId: "D3R4WRdGs1M",
+        videoTitle: "Materi Lengkap Descriptive Text Kelas IX",
+        summaryCards: [
+          { title: "Tujuan & Struktur", color: "bg-blue-50 border-blue-100 text-blue-900", body: "<strong>Purpose:</strong> Menggambarkan (<em>to describe</em>) objek spesifik.<br><strong>Structure:</strong> 1) <em>Identification</em> (pengenalan objek), 2) <em>Description</em> (ciri fisik, habitat, makanan, kebiasaan & kemampuan)." },
+          { title: "Ciri Kebahasaan", color: "bg-amber-50 border-amber-100 text-amber-900", body: "Memakai <strong>Simple Present Tense</strong> (<em>lives, eats, has, swims, can climb</em>) dan banyak kata sifat (<em>giant, rough, sharp, ancient, reddish-brown</em>)." }
+        ],
+        flashcards: [
+          { front: "Identification", hint: "Struktur 1", back: "Paragraf pembuka yang memperkenalkan nama, jenis, atau lokasi objek yang dideskripsikan." },
+          { front: "Description", hint: "Struktur 2", back: "Paragraf yang menjelaskan ciri fisik (ukuran, warna, bahan), makanan, habitat, sifat, dan kemampuan." },
+          { front: "Ability / Habit", hint: "Kalimat Kunci", back: "Kemampuan memakai 'can' (can swim well), kebiasaan memakai V1/V1+s (mainly eats fruits)." },
+          { front: "Context Clues", hint: "Arti Kata", back: "Cara menebak arti kata sulit dengan membaca kata/kalimat sebelum dan sesudahnya di dalam teks." }
+        ],
+        passages: {
+          komodo: {
+            tag: "TEXT 1A • ANIMAL",
+            title: "The Komodo Dragon",
+            body: `The Komodo dragon (<em>Varanus komodoensis</em>) is the largest living lizard on Earth. It lives natively on several Indonesian islands, especially Komodo, Rinca, and Flores in East Nusa Tenggara. An adult Komodo dragon can grow up to 3 meters long and weigh around 70 kilograms. It has rough, dark grey-brown scales, a long muscular tail, and sharp curved claws.<br><br>Komodo dragons are carnivores. They mainly eat deer, wild pigs, and water buffalo. They are excellent hunters because they have a keen sense of smell and venomous saliva. When a Komodo dragon bites its prey, the venom slowly weakens the animal so the dragon can easily catch it later. Even though they look heavy, Komodo dragons can run quickly for short distances and swim well between nearby islands.`
+          },
+          borobudur: {
+            tag: "TEXT 1B • PLACE",
+            title: "Borobudur Temple",
+            body: `Borobudur is the largest Buddhist temple in the world. It is located in Magelang, Central Java, Indonesia. Built in the 9th century by the Sailendra Dynasty, this ancient monument is made of dark grey volcanic stone blocks fitted together without any cement.<br><br>From the air, Borobudur looks like a giant stepped pyramid with nine stacked platforms. The temple walls are decorated with more than 2,600 relief panels and 504 Buddha statues. At the top, there is a magnificent central dome surrounded by 72 bell-shaped stupas. Many tourists visit Borobudur early in the morning because they want to watch the breathtaking sunrise behind Mount Merapi.`
+          },
+          orangutan: {
+            tag: "TEXT 1C • ENDEMIC ANIMAL",
+            title: "The Indonesian Orangutan",
+            body: `The orangutan is a large, intelligent great ape native to the tropical rainforests of Borneo (Kalimantan) and Sumatra. The name "orangutan" comes from Malay and Indonesian words meaning "person of the forest." Orangutans have long, shaggy reddish-brown hair and very long, strong arms that can reach over two meters from fingertip to fingertip.<br><br>They spend almost their entire lives high up in the trees because their long arms and grasping feet help them swing easily from branch to branch. Every evening, an orangutan builds a fresh nest out of leaves and branches to sleep in. Orangutans mainly eat ripe fruits such as durian and figs, along with young leaves, bark, and insects. Sadly, orangutans are endangered because deforestation destroys their forest homes.`
+          }
+        },
+        questions: [
+          // --- Text 1A: Komodo Dragon (1-10) ---
+          { id: 1, passage: "komodo", type: "mcq", q: "Where do Komodo dragons live natively?", options: ["In Sumatra and West Java", "On Komodo, Rinca, and Flores islands", "In Kalimantan peat swamps", "On Sulawesi mountain peaks"], ans: 1 },
+          { id: 2, passage: "komodo", type: "tf", q: "An adult Komodo dragon can grow up to 3 meters long and mainly eats tropical plants.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 1 },
+          { id: 3, passage: "komodo", type: "mcq", q: "Why are Komodo dragons excellent hunters?", options: ["Because they can fly over trees", "Because they hunt in groups of fifty", "Because they have a keen sense of smell and venomous saliva", "Because they turn invisible at night"], ans: 2 },
+          { id: 4, passage: "komodo", type: "mcq", q: "Which of the following is a physical feature of the Komodo dragon?", options: ["Soft white fur and short ears", "Rough dark grey-brown scales and sharp curved claws", "Colorful wings and a small beak", "Smooth green skin without a tail"], ans: 1 },
+          { id: 5, passage: "komodo", type: "mcq", q: "Which sentence shows the Komodo dragon's ability?", options: ["It lives natively on several Indonesian islands.", "It weighs around 70 kilograms.", "Komodo dragons can run quickly and swim well.", "It is also called Varanus komodoensis."], ans: 2 },
+          { id: 6, passage: "komodo", type: "fill", q: "When a Komodo dragon bites its prey, its ___ slowly weakens the animal.", choices: ["venom", "feathers", "nest", "wings"], ans: "venom" },
+          { id: 7, passage: "komodo", type: "match", q: "Jodohkan informasi dari Text 1A di kiri dengan pasangan yang tepat di kanan!", pairs: [["Habitat", "Komodo, Rinca & Flores"], ["Main food", "Deer, wild pigs & buffalo"], ["Physical feature", "Rough dark grey-brown scales"]], rightOrder: [2, 0, 1] },
+          { id: 8, passage: "komodo", type: "short", q: "Ketik SATU kata bahasa Inggris dari paragraf 1 yang artinya 'sisik':", placeholder: "s _ _ _ _ s", ans: "scales" },
+          { id: 9, passage: "komodo", type: "error", q: "Temukan SATU kata yang SALAH secara tata bahasa pada kalimat deskriptif ini (tap kata yang salah):", words: ["An", "adult", "Komodo", "dragon", "have", "sharp", "curved", "claws."], ans: 4 },
+          { id: 10, passage: "komodo", type: "order", q: "Susun kata-kata berikut menjadi kalimat yang benar tentang Komodo!", words: ["between", "can", "Komodo dragons", "islands.", "swim well"], ans: "Komodo dragons can swim well between islands." },
+
+          // --- Text 1B: Borobudur Temple (11-20) ---
+          { id: 11, passage: "borobudur", type: "mcq", q: "What is the main purpose of Text 1B?", options: ["To tell a funny story about a tourist", "To describe Borobudur Temple in detail", "To explain how to mix cement", "To persuade readers to move to Magelang"], ans: 1 },
+          { id: 12, passage: "borobudur", type: "mcq", q: "Who built Borobudur Temple in the 9th century?", options: ["The Majapahit Kingdom", "The Sailendra Dynasty", "The Sriwijaya Navy", "The Dutch colonial government"], ans: 1 },
+          { id: 13, passage: "borobudur", type: "mcq", q: "'At the top, there is a <u>magnificent</u> central dome...' What is the closest meaning of 'magnificent'?", options: ["Very impressive and grand", "Broken and tiny", "Cheap and plain", "Dark and narrow"], ans: 0 },
+          { id: 14, passage: "borobudur", type: "mcq", q: "Why do many tourists visit Borobudur early in the morning?", options: ["Because entrance tickets are free at 5 a.m.", "Because they want to watch the sunrise behind Mount Merapi", "Because the temple closes at 8 a.m.", "Because there are no statues in the afternoon"], ans: 1 },
+          { id: 15, passage: "borobudur", type: "mcq", q: "What does Borobudur look like from the air?", options: ["A long wooden bridge", "A round swimming pool", "A giant stepped pyramid with nine stacked platforms", "A flat modern stadium"], ans: 2 },
+          { id: 16, passage: "borobudur", type: "tf", q: "Borobudur's volcanic stone blocks were fitted together using a lot of modern cement.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 1 },
+          { id: 17, passage: "borobudur", type: "fill", q: "The temple walls are decorated with more than 2,600 relief panels and 504 Buddha ___.", choices: ["statues", "bridges", "gardens", "rivers"], ans: "statues" },
+          { id: 18, passage: "borobudur", type: "short", q: "Di kota manakah Candi Borobudur terletak menurut Text 1B? (Ketik nama kotanya saja)", placeholder: "Contoh: Blitar", ans: "magelang" },
+          { id: 19, passage: "borobudur", type: "match", q: "Jodohkan angka dari Text 1B dengan objeknya!", pairs: [["9th century", "Time Borobudur was built"], ["504", "Number of Buddha statues"], ["72", "Bell-shaped stupas at the top"]], rightOrder: [1, 2, 0] },
+          { id: 20, passage: "borobudur", type: "order", q: "Susun kata-kata berikut menjadi kalimat deskriptif tentang Borobudur!", words: ["Central Java.", "is located", "Borobudur", "in Magelang,"], ans: "Borobudur is located in Magelang, Central Java." },
+
+          // --- Text 1C: Indonesian Orangutan (21-30) ---
+          { id: 21, passage: "orangutan", type: "mcq", q: "Where is the natural habitat of the Indonesian orangutan?", options: ["The savannas of East Nusa Tenggara", "The tropical rainforests of Borneo and Sumatra", "The dry hills of Central Java", "The snowy mountains of Papua"], ans: 1 },
+          { id: 22, passage: "orangutan", type: "mcq", q: "Why do orangutans spend almost their entire lives high up in the trees?", options: ["Because they cannot walk at all", "Because their long arms and grasping feet help them swing easily from branch to branch", "Because they eat fish from the clouds", "Because they are afraid of green leaves"], ans: 1 },
+          { id: 23, passage: "orangutan", type: "mcq", q: "What is the color and texture of an orangutan's hair?", options: ["Short smooth white hair", "Long shaggy reddish-brown hair", "Curly jet-black fur", "Bright yellow feathers"], ans: 1 },
+          { id: 24, passage: "orangutan", type: "mcq", q: "Why are orangutans endangered today?", options: ["Because they forget how to build nests", "Because deforestation destroys their forest homes", "Because durian trees are too tall", "Because they swim across the ocean"], ans: 1 },
+          { id: 25, passage: "orangutan", type: "tf", q: "Every evening, an orangutan builds a fresh nest out of leaves and branches to sleep in.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 0 },
+          { id: 26, passage: "orangutan", type: "fill", q: "Orangutans mainly eat ripe ___ such as durian and figs.", choices: ["fruits", "stones", "buffalo", "scales"], ans: "fruits" },
+          { id: 27, passage: "orangutan", type: "mcq", q: "'The orangutan is a large, <u>intelligent</u> great ape...' The closest meaning of 'intelligent' is...", options: ["Smart and clever", "Lazy and slow", "Small and weak", "Angry and wild"], ans: 0 },
+          { id: 28, passage: "orangutan", type: "short", q: "Menurut teks, kata 'orangutan' berarti 'person of the ___'. (Ketik 1 kata bahasa Inggris)", placeholder: "f _ _ _ _ t", ans: "forest" },
+          { id: 29, passage: "orangutan", type: "error", q: "Temukan SATU kata yang SALAH secara tata bahasa pada kalimat ini (tap kata yang salah):", words: ["The", "orangutan", "live", "in", "the", "tropical", "rainforests", "of", "Sumatra."], ans: 2 },
+          { id: 30, passage: "orangutan", type: "match", q: "Jodohkan ciri Orangutan dengan fungsinya berdasarkan Text 1C!", pairs: [["Long strong arms", "Swing easily between branches"], ["Leaves and branches", "Material for evening nest"], ["Durian and figs", "Favorite ripe fruits"]], rightOrder: [2, 0, 1] }
+        ]
+      },
+
+      // -----------------------------------------------------------------------
+      // MODUL 2: NARRATIVE TEXT (30 SOAL: ID 31 - 60)
+      // -----------------------------------------------------------------------
+      {
+        id: 1,
+        code: "Modul 2",
+        shortTitle: "Narrative Text",
+        title: "Narrative Text (Legenda & Fabel)",
+        desc: "Lake Toba, Kancil & Crocodiles, dan Malin Kundang",
+        estimate: "±35 Menit",
+        icon: "📖",
+        badgeBg: "bg-[#F3E8FF]",
+        badgeText: "text-[#7C3AED]",
+        barColor: "bg-purple-600",
+        videoId: "vrQS03rVSNc",
+        videoTitle: "Materi Lengkap Narrative Text (Legenda & Fabel)",
+        summaryCards: [
+          { title: "Struktur Cerita", color: "bg-purple-50 border-purple-100 text-purple-900", body: "1) <strong>Orientation:</strong> Pengenalan tokoh & latar.<br>2) <strong>Complication:</strong> Munculnya konflik/masalah utama.<br>3) <strong>Resolution:</strong> Penyelesaian cerita & <strong>Moral Value</strong> (amanat)." },
+          { title: "Fokus Kisi-Kisi SAS 1", color: "bg-blue-50 border-blue-100 text-blue-900", body: "Waspadai soal <strong>NOT TRUE</strong> (cari yang salah), <strong>Pronoun Reference</strong> (<em>he/she/it/they</em> merujuk ke siapa), watak tokoh, sebab (<em>why</em>), dan urutan kejadian." }
+        ],
+        flashcards: [
+          { front: "Complication", hint: "Struktur Cerita", back: "Bagian cerita tempat masalah/konflik utama muncul dan mulai memuncak." },
+          { front: "Moral Value", hint: "Amanat", back: "Pesan kebaikan atau pelajaran hidup yang bisa diambil pembaca dari sebuah legenda/fabel." },
+          { front: "Pronoun Reference", hint: "Kata Ganti", back: "Mencari tokoh/benda yang dirujuk oleh kata ganti (he, she, it, they, them) dari kalimat sebelumnya." },
+          { front: "Character Traits", hint: "Watak Tokoh", back: "clever (cerdik), greedy (serakah), arrogant (sombong), grateful (bersyukur), short-tempered (mudah marah)." }
+        ],
+        passages: {
+          toba: {
+            tag: "TEXT 2A • LEGEND",
+            title: "The Legend of Lake Toba",
+            body: `Long ago, in North Sumatra, lived a poor young farmer named Toba. One day, he caught a large golden fish in the river. Surprisingly, the fish turned into a beautiful woman. Toba fell in love and asked her to marry him. She agreed on one strict condition: Toba must never tell anyone that she was originally a fish. Toba promised to keep the secret.<br><br>Years later, they had a son named Samosir. Samosir was a cheerful boy, but he was a bit lazy and always hungry. One hot afternoon, his mother asked him to deliver lunch to Toba in the rice field. On the way, Samosir felt very hungry and ate almost all of his father's food. When Toba received the nearly empty lunch box, he became furious. He shouted, "You lazy son of a fish!"<br><br>Samosir cried and ran home to tell his mother. Hearing that Toba had broken his promise, his wife became deeply sad. She told Samosir to climb the highest hill immediately. Suddenly, heavy rain fell non-stop and flooded the entire valley. The valley turned into a huge lake called Lake Toba, and the hill where Samosir stood became Samosir Island.`
+          },
+          kancil: {
+            tag: "TEXT 2B • FABLE",
+            title: "The Clever Mouse Deer and the Crocodiles",
+            body: `One sunny morning, Kancil the mouse deer wanted to cross a wide river because he saw delicious ripe mangoes on the other side. However, the river was full of hungry crocodiles. Kancil thought carefully and came up with a smart plan.<br><br>He walked to the riverbank and called out loudly, "Hey Crocodiles! The King of the Forest ordered me to count how many crocodiles live here so he can prepare a big feast for you!" The greedy crocodiles immediately believed him because they loved free food. Their leader asked all the crocodiles to line up neatly from one bank to the other.<br><br>Kancil happily jumped onto the first crocodile's back and counted, "One, two, three..." until he reached the opposite riverbank. After safely landing on the grass, Kancil laughed and thanked them for being a great bridge. The crocodiles realized they had been tricked, and they felt very embarrassed while Kancil enjoyed the sweet mangoes.`
+          },
+          malin: {
+            tag: "TEXT 2C • FOLKTALE",
+            title: "The Legend of Malin Kundang",
+            body: `A long time ago, in a coastal village in West Sumatra, lived a poor widow and her only son, Malin Kundang. Malin was a hardworking and brave boy who dreamed of becoming rich to help his mother. One day, a large merchant ship anchored near the beach. Malin asked his mother's permission to sail away and seek his fortune. Although she felt sad, she allowed him to go and prayed for his safety every day.<br><br>Many years later, Malin became a wealthy merchant and married a noblewoman. One day, his luxurious ship stopped at his hometown harbor. Hearing the news, his old mother ran eagerly to the beach and hugged him tightly. However, Malin felt ashamed of his mother's ragged clothes in front of his wife. He pushed her away harshly and shouted, "I do not know this poor old woman!"<br><br>His mother was heartbroken. With tears rolling down her cheeks, she raised her hands and prayed to God for justice. Soon after Malin's ship sailed away, a violent storm struck the sea. Thunder roared and huge waves smashed the ship. The next morning, people saw a large stone shaped like a kneeling man on the shore. They believed it was the cursed Malin Kundang.`
+          }
+        },
+        questions: [
+          // --- Text 2A: Lake Toba (31-40) ---
+          { id: 31, passage: "toba", type: "mcq", q: "What is the main complication (problem) in Text 2A?", options: ["Toba could not catch any fish in the river.", "Samosir ate his father's lunch and Toba broke his promise in anger.", "Toba's wife did not know how to cook.", "The rice field was destroyed by wild pigs."], ans: 1 },
+          { id: 32, passage: "toba", type: "mcq", q: "What is the moral value of 'The Legend of Lake Toba'?", options: ["We must always keep our promises and control our anger.", "Never go fishing in a big river.", "Parents should never eat lunch in the rice field.", "Golden fish are dangerous animals."], ans: 0 },
+          { id: 33, passage: "toba", type: "mcq", q: "Which statement is NOT TRUE according to Text 2A?", options: ["Toba was a poor young farmer in North Sumatra.", "Toba's wife was originally a golden fish.", "Samosir delivered all the food untouched to his father.", "The flooded valley became Lake Toba."], ans: 2 },
+          { id: 34, passage: "toba", type: "fill", q: "'When Toba received the nearly empty lunch box, <u>he</u> became furious.' Kata 'he' merujuk pada ___.", choices: ["Samosir", "Toba", "The golden fish", "The neighbor"], ans: "Toba" },
+          { id: 35, passage: "toba", type: "mcq", q: "How was Toba's character when he saw the nearly empty lunch box?", options: ["Patient and calm", "Short-tempered (easily angry)", "Generous and cheerful", "Shy and quiet"], ans: 1 },
+          { id: 36, passage: "toba", type: "mcq", q: "Why did Toba's wife become deeply sad and tell Samosir to climb the hill?", options: ["Because Samosir lost the lunch box", "Because Toba had broken his promise", "Because the rice harvest failed", "Because she wanted to go swimming"], ans: 1 },
+          { id: 37, passage: "toba", type: "mcq", q: "What happened right AFTER Samosir told his mother what Toba had shouted?", options: ["Toba caught another golden fish.", "Samosir returned to the rice field.", "His mother told him to climb the highest hill and heavy rain flooded the valley.", "They celebrated a festival together."], ans: 2 },
+          { id: 38, passage: "toba", type: "order", q: "Urutkan kejadian Legenda Danau Toba dari awal hingga akhir!", words: ["Toba caught a golden fish.", "Samosir ate his father's lunch.", "Toba shouted and broke his promise.", "Heavy rain created Lake Toba."], ans: "Toba caught a golden fish. Samosir ate his father's lunch. Toba shouted and broke his promise. Heavy rain created Lake Toba." },
+          { id: 39, passage: "toba", type: "short", q: "Kata sifat di paragraf 2 yang berarti 'sangat marah' adalah ___ (ketik 1 kata bahasa Inggris):", placeholder: "f _ _ _ _ _ s", ans: "furious" },
+          { id: 40, passage: "toba", type: "tf", q: "The hill where Samosir stood during the flood became Samosir Island.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 0 },
+
+          // --- Text 2B: Kancil & Crocodiles (41-50) ---
+          { id: 41, passage: "kancil", type: "mcq", q: "Which adjective best describes Kancil's character in Text 2B?", options: ["Clever (cerdik)", "Greedy (serakah)", "Lazy (malas)", "Careless (ceroboh)"], ans: 0 },
+          { id: 42, passage: "kancil", type: "mcq", q: "Why did Kancil ask the crocodiles to line up across the river?", options: ["He really wanted to cook them a feast.", "He wanted to use their backs as a bridge to reach the mangoes.", "He wanted to teach them how to count.", "He was afraid of the mango trees."], ans: 1 },
+          { id: 43, passage: "kancil", type: "mcq", q: "What happened BEFORE Kancil jumped onto the crocodiles' backs?", options: ["Kancil ate the sweet mangoes.", "The crocodiles felt embarrassed.", "The crocodiles lined up neatly from one bank to the other.", "Kancil thanked the crocodiles."], ans: 2 },
+          { id: 44, passage: "kancil", type: "mcq", q: "Why did the crocodiles believe Kancil's story immediately?", options: ["Because they were Kancil's best friends", "Because they were greedy and loved free food", "Because the King of the Forest stood beside Kancil", "Because they wanted to eat mangoes too"], ans: 1 },
+          { id: 45, passage: "kancil", type: "fill", q: "'Kancil laughed and thanked <u>them</u> for being a great bridge.' Kata 'them' merujuk pada ___.", choices: ["the mangoes", "the crocodiles", "the riverbanks", "the kings"], ans: "the crocodiles" },
+          { id: 46, passage: "kancil", type: "tf", q: "The crocodiles felt proud and happy after realizing Kancil had tricked them.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 1 },
+          { id: 47, passage: "kancil", type: "match", q: "Jodohkan tokoh/situasi dari Text 2B dengan sifatnya!", pairs: [["Kancil", "Smart and clever"], ["Crocodiles at first", "Greedy for free food"], ["Crocodiles at the end", "Tricked and embarrassed"]], rightOrder: [1, 2, 0] },
+          { id: 48, passage: "kancil", type: "short", q: "Buah apa yang ingin dimakan Kancil di seberang sungai? (Bahasa Inggris bentuk jamak)", placeholder: "m _ _ _ _ _ s", ans: "mangoes" },
+          { id: 49, passage: "kancil", type: "mcq", q: "What lesson can we learn from Text 2B?", options: ["Intelligence can overcome danger, and do not be greedy.", "Always trust strangers who promise free food.", "Crocodiles are smarter than mouse deer.", "Never eat mangoes in the morning."], ans: 0 },
+          { id: 50, passage: "kancil", type: "error", q: "Temukan SATU kata yang SALAH secara tata bahasa pada kalimat fabel ini (tap kata yang salah):", words: ["Kancil", "happily", "jump", "onto", "the", "first", "crocodile's", "back", "yesterday."], ans: 2 },
+
+          // --- Text 2C: Malin Kundang (51-60) ---
+          { id: 51, passage: "malin", type: "mcq", q: "Why did Malin Kundang sail away from his coastal village?", options: ["Because he hated his mother's cooking", "Because he wanted to seek his fortune and help his mother", "Because a storm pushed his boat away", "Because his wife lived on the ship"], ans: 1 },
+          { id: 52, passage: "malin", type: "mcq", q: "Which statement is NOT TRUE according to Text 2C?", options: ["Malin came from a coastal village in West Sumatra.", "Malin's mother prayed for his safety every day.", "Malin proudly introduced his mother to his noble wife.", "A violent storm smashed Malin's ship."], ans: 2 },
+          { id: 53, passage: "malin", type: "mcq", q: "How did Malin Kundang's character change after he became wealthy?", options: ["He became humble and generous.", "He became arrogant and ungrateful.", "He became shy and frightened.", "He became lazy and poor."], ans: 1 },
+          { id: 54, passage: "malin", type: "fill", q: "'Although <u>she</u> felt sad, she allowed him to go...' Kata 'she' merujuk pada ___.", choices: ["Malin's wife", "Malin's mother", "The noblewoman", "A villager"], ans: "Malin's mother" },
+          { id: 55, passage: "malin", type: "mcq", q: "What happened right BEFORE the violent storm struck the sea?", options: ["Malin married a noblewoman.", "Malin's heartbroken mother raised her hands and prayed to God for justice.", "People found a kneeling stone on the shore.", "Malin worked as a fisherman."], ans: 1 },
+          { id: 56, passage: "malin", type: "match", q: "Jodohkan kosakata dari Text 2C dengan maknanya!", pairs: [["Wealthy", "Very rich"], ["Ragged", "Old and torn"], ["Heartbroken", "Extremely sad"]], rightOrder: [2, 0, 1] },
+          { id: 57, passage: "malin", type: "error", q: "Temukan SATU kata yang SALAH secara tata bahasa pada kalimat naratif ini (tap kata yang salah):", words: ["Many", "years", "later,", "Malin", "become", "a", "wealthy", "merchant."], ans: 4 },
+          { id: 58, passage: "malin", type: "mcq", q: "What is the main moral message of 'The Legend of Malin Kundang'?", options: ["We must always respect and love our parents no matter how successful we become.", "Never sail on a big merchant ship.", "Living in a coastal village is dangerous.", "Always wear expensive clothes at the beach."], ans: 0 },
+          { id: 59, passage: "malin", type: "short", q: "Menurut paragraf 3, di tepi pantai orang-orang melihat sebuah batu besar berbentuk seorang pria yang sedang berlutut. Ketik kata bahasa Inggris untuk 'batu' dari teks:", placeholder: "s _ _ _ e", ans: "stone" },
+          { id: 60, passage: "malin", type: "order", q: "Urutkan kejadian Legenda Malin Kundang secara kronologis!", words: ["Malin sailed away to seek fortune.", "Malin became a wealthy merchant.", "Malin pushed his old mother away.", "A violent storm smashed his ship."], ans: "Malin sailed away to seek fortune. Malin became a wealthy merchant. Malin pushed his old mother away. A violent storm smashed his ship." }
+        ]
+      },
+
+      // -----------------------------------------------------------------------
+      // MODUL 3: HOLIDAY DIALOG, HAS/HAVE & BEFORE/AFTER (15 SOAL: ID 61 - 75)
+      // -----------------------------------------------------------------------
+      {
+        id: 2,
+        code: "Modul 3",
+        shortTitle: "Dialog, Has/Have & Before/After",
+        title: "Holiday Dialog, Has/Have & Before/After",
+        desc: "Percakapan Liburan, Kepemilikan & Urutan Kejadian",
+        estimate: "±20 Menit",
+        icon: "💬",
+        badgeBg: "bg-[#DCFCE7]",
+        badgeText: "text-[#16A34A]",
+        barColor: "bg-emerald-500",
+        videoId: "CApPEgntWag",
+        videoTitle: "Materi Holiday Dialog, Has/Have & Before/After",
+        summaryCards: [
+          { title: "Has vs Have (Kepemilikan)", color: "bg-emerald-50 border-emerald-100 text-emerald-900", body: "<strong>HAS</strong> → subjek tunggal (<em>He, She, It, My brother, Mr. Feri</em>).<br><strong>HAVE</strong> → <em>I, You, We, They</em>, & subjek jamak (<em>The students, Rani and Dita</em>)." },
+          { title: "Before vs After", color: "bg-amber-50 border-amber-100 text-amber-900", body: "<strong>AFTER (sesudah)</strong> diikuti kejadian yang terjadi <strong>lebih dulu</strong>.<br><strong>BEFORE (sebelum)</strong> diikuti kejadian yang terjadi <strong>belakangan</strong>." }
+        ],
+        flashcards: [
+          { front: "HAS", hint: "Subjek Tunggal", back: "Dipakai untuk He, She, It, dan 1 orang/benda. Contoh: 'My sister has a rabbit.'" },
+          { front: "HAVE", hint: "I, You, We, They & Jamak", back: "Dipakai untuk I, You, We, They, dan subjek jamak. Contoh: 'The students have books.'" },
+          { front: "AFTER + Kejadian 1", hint: "Sesudah", back: "Budi played football AFTER he finished his homework. (PR selesai dulu, baru main bola)." },
+          { front: "BEFORE + Kejadian 2", hint: "Sebelum", back: "Sinta opened the door BEFORE she turned on the light. (Buka pintu dulu, baru nyalakan lampu)." }
+        ],
+        passages: {
+          dialog: {
+            tag: "DIALOG 3A • HOLIDAY EXPERIENCE",
+            title: "Holiday at Mount Bromo & Blitar",
+            body: `<strong>Rina:</strong> "Hi Doni! How was your school holiday last week?"<br><strong>Doni:</strong> "It was awesome, Rina! My family and I went to Mount Bromo for two days."<br><strong>Rina:</strong> "Wow, really? Did you ride a horse there?"<br><strong>Doni:</strong> "Yes, I did! We also woke up at 3 a.m. to see the sunrise. It was freezing cold, so we wore thick jackets. How about you?"<br><strong>Rina:</strong> "I stayed in Blitar and helped my grandmother bake cookies. Then we visited Kampung Coklat on Sunday afternoon. It was fun too!"`
+          }
+        },
+        questions: [
+          // --- Holiday Dialog (61-63) ---
+          { id: 61, passage: "dialog", type: "mcq", q: "Which statement is TRUE based on Dialog 3A?", options: ["Doni went to Mount Bromo alone for a week.", "Doni and his family wore thick jackets because it was freezing cold.", "Rina rode a horse at Mount Bromo with Doni.", "Doni woke up at 9 a.m. to watch the sunrise."], ans: 1 },
+          { id: 62, passage: "dialog", type: "tf", q: "During the holiday, Rina stayed in Blitar, helped her grandmother bake cookies, and visited Kampung Coklat.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 0 },
+          { id: 63, passage: "dialog", type: "fill", q: "Doni and his family woke up at 3 a.m. at Mount Bromo to see the ___.", choices: ["sunrise", "cookies", "rain", "movies"], ans: "sunrise" },
+
+          // --- Has / Have (64-69) ---
+          { id: 64, type: "fill", q: "My younger sister ___ a cute white rabbit at home.", choices: ["has", "have"], ans: "has" },
+          { id: 65, type: "fill", q: "The students of class 9E ___ many interesting storybooks in the classroom.", choices: ["has", "have"], ans: "have" },
+          { id: 66, type: "short", q: "Lengkapi kalimat berikut dengan 'has' atau 'have': Mr. Feri ___ a very neat English classroom.", placeholder: "has / have", ans: "has" },
+          { id: 67, type: "match", q: "Jodohkan subjek di kolom kiri dengan pasangan 'has' atau 'have' yang benar!", pairs: [["Rani and Dita", "have two new dictionaries"], ["Our school library", "has thousands of books"], ["I", "have a blue backpack"]], rightOrder: [2, 0, 1] },
+          { id: 68, type: "error", q: "Temukan SATU kata yang SALAH pada kalimat berikut (tap kata yang salah):", words: ["My", "cousin", "and", "his", "friend", "has", "a", "great", "stamp", "collection."], ans: 5 },
+          { id: 69, type: "mcq", q: "Which sentence uses 'has' or 'have' CORRECTLY?", options: ["Every student in class 9A have an English notebook.", "My parents has a small coffee shop in Blitar.", "The cat under the table has soft grey fur.", "We has a flag ceremony every Monday morning."], ans: 2 },
+
+          // --- Before / After (70-75) ---
+          { id: 70, type: "fill", q: "Budi always washes his hands ___ he eats his lunch.", choices: ["before", "after"], ans: "before" },
+          { id: 71, type: "fill", q: "Sinta played badminton with her friends ___ she finished her homework.", choices: ["before", "after"], ans: "after" },
+          { id: 72, type: "short", q: "Lengkapi dengan 'before' atau 'after': Doni unlocked the front door ___ he entered the house.", placeholder: "before / after", ans: "before" },
+          { id: 73, type: "mcq", q: "Kejadian 1: Rani brushed her teeth. Kejadian 2: Rani went to bed. Kalimat mana yang BENAR?", options: ["Rani went to bed before she brushed her teeth.", "Rani went to bed after she brushed her teeth.", "Rani brushed her teeth after she went to bed.", "After Rani went to bed, she brushed her teeth."], ans: 1 },
+          { id: 74, type: "order", q: "Susun kata-kata berikut menjadi kalimat 'before' yang tepat!", words: ["she turned on", "the door", "before", "Sinta opened", "the light."], ans: "Sinta opened the door before she turned on the light." },
+          { id: 75, type: "tf", q: "Kalimat 'We dried our wet hair after we took a shower' menggunakan kata 'after' dengan benar.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 0 }
+        ]
+      },
+
+      // -----------------------------------------------------------------------
+      // MODUL 4: SIMPLE PAST, QUESTION WORDS & OSASCOMP (25 SOAL: ID 76 - 100)
+      // -----------------------------------------------------------------------
+      {
+        id: 3,
+        code: "Modul 4",
+        shortTitle: "Past Tense, WH & OSASCOMP",
+        title: "Simple Past, Question Words & OSASCOMP",
+        desc: "Kalimat Lampau (+/-/ ?), Kata Tanya & Urutan Kata Sifat",
+        estimate: "±30 Menit",
+        icon: "⚡",
+        badgeBg: "bg-[#DBEAFE]",
+        badgeText: "text-[#2563EB]",
+        barColor: "bg-brand-600",
+        videoId: "55TFCfO03oI",
+        videoTitle: "Materi Simple Past Tense, Question Words & OSASCOMP",
+        summaryCards: [
+          { title: "Simple Past & Question Words", color: "bg-blue-50 border-blue-100 text-blue-900", body: "<strong>(+)</strong> S + V2 | <strong>(-)</strong> S + did not + V1 | <strong>(?)</strong> Did + S + V1?<br><strong>WH:</strong> Who, What, Where, When, Why (<em>because</em>), How." },
+          { title: "Adjective Phrase (OSASCOMP)", color: "bg-indigo-50 border-indigo-100 text-indigo-900", body: "<strong>O</strong>pinion – <strong>S</strong>ize – <strong>A</strong>ge – <strong>S</strong>hape – <strong>C</strong>olor – <strong>O</strong>rigin – <strong>M</strong>aterial + <strong>Noun</strong>.<br>Contoh: <em>a lovely big old white house</em>." }
+        ],
+        flashcards: [
+          { front: "Irregular Verbs (V1 → V2)", hint: "Simple Past (+)", back: "go → went | buy → bought | eat → ate | see → saw | write → wrote | drink → drank." },
+          { front: "Aturan Did / Did Not", hint: "Simple Past (- / ?)", back: "Setelah 'did' atau 'did not', kata kerja WAJIB kembali ke V1! Contoh: 'Did you go?' bukan 'Did you went?'" },
+          { front: "Why ↔ Because", hint: "Question Words", back: "Jika jawaban diawali 'Because...' (alasan), kata tanya yang cocok selalu 'Why'." },
+          { front: "OSASCOMP", hint: "Adjective Order", back: "Opinion (lovely) → Size (big) → Age (old) → Shape (round) → Color (white) → Origin (Japanese) → Material (wooden) → Noun." }
+        ],
+        passages: {},
+        questions: [
+          // --- Simple Past Tense (76-85) ---
+          { id: 76, type: "fill", q: "(Simple Past +) Yesterday, my classmates and I ___ to Bung Karno Museum in Blitar.", choices: ["go", "went", "going", "gone"], ans: "went" },
+          { id: 77, type: "short", q: "(Simple Past +) Ketik bentuk V2 dari kata kerja 'buy': My mother ___ fresh fruits at the market yesterday.", placeholder: "V2 dari buy...", ans: "bought" },
+          { id: 78, type: "fill", q: "(Simple Past -) Raka did not ___ football yesterday afternoon because it rained heavily.", choices: ["play", "played", "playing", "plays"], ans: "play" },
+          { id: 79, type: "short", q: "(Simple Past -) Lengkapi kalimat negatif dengan V1 yang tepat: We did not ___ (eat) spicy food last night.", placeholder: "Ketik V1...", ans: "eat" },
+          { id: 80, type: "fill", q: "(Simple Past ?) ___ you visit Penataran Temple last Sunday?", choices: ["Do", "Does", "Did", "Are"], ans: "Did" },
+          { id: 81, type: "order", q: "Susun kata-kata berikut menjadi kalimat tanya Simple Past Tense yang benar!", words: ["yesterday?", "wake up", "did", "What time", "you"], ans: "What time did you wake up yesterday?" },
+          { id: 82, type: "mcq", q: "Which interrogative sentence in Simple Past Tense is grammatically CORRECT?", options: ["What time did you went to bed last night?", "What time did you go to bed last night?", "What time do you went to bed last night?", "What time you did go to bed last night?"], ans: 1 },
+          { id: 83, type: "match", q: "Jodohkan kata kerja dasar (V1) dengan bentuk lampaunya (V2)!", pairs: [["eat", "ate"], ["write", "wrote"], ["see", "saw"]], rightOrder: [2, 0, 1] },
+          { id: 84, type: "error", q: "Temukan SATU kata yang SALAH pada kalimat tanya Simple Past berikut (tap kata yang salah):", words: ["Did", "your", "sister", "bought", "a", "new", "novel", "yesterday?"], ans: 3 },
+          { id: 85, type: "tf", q: "Kalimat 'They did not went to school on Sunday' adalah kalimat Simple Past Tense yang benar.", options: ["TRUE (Benar)", "FALSE (Salah)"], ans: 1 },
+
+          // --- Question Words (86-91) ---
+          { id: 86, type: "fill", q: "A: ___ did you go to Malang last weekend? B: Because I visited my grandmother.", choices: ["Who", "Where", "Why", "When"], ans: "Why" },
+          { id: 87, type: "mcq", q: "Pilih pertanyaan yang tepat untuk jawaban: 'They arrived at SMPN 6 Blitar at 7 a.m.'", options: ["Who arrived at 7 a.m.?", "When did they arrive at SMPN 6 Blitar?", "Why did they arrive early?", "Where did they study?"], ans: 1 },
+          { id: 88, type: "short", q: "Ketik kata tanya (Question Word) yang tepat: '___ teaches English in class 9A?' Answer: 'Mr. Feri does.'", placeholder: "Who / What / Where...", ans: "who" },
+          { id: 89, type: "mcq", q: "Pilih pertanyaan yang tepat untuk jawaban: 'She went to school by bicycle.'", options: ["Where did she go?", "How did she go to school?", "When did she buy a bicycle?", "Who rode the bicycle?"], ans: 1 },
+          { id: 90, type: "match", q: "Jodohkan Question Word dengan jenis jawaban yang sesuai!", pairs: [["Where", "At Kampung Coklat Blitar"], ["Why", "Because it was raining"], ["Who", "My English teacher, Mr. Feri"]], rightOrder: [1, 2, 0] },
+          { id: 91, type: "order", q: "Susun kata-kata berikut menjadi pertanyaan yang benar!", words: ["your holiday?", "did", "spend", "Where", "you"], ans: "Where did you spend your holiday?" },
+
+          // --- Adjective Phrase OSASCOMP (92-100) ---
+          { id: 92, type: "order", q: "Susun Adjective Phrase (OSASCOMP): Pendapat - Ukuran - Umur - Warna - Benda", words: ["house", "white", "big", "a", "old", "lovely"], ans: "a lovely big old white house" },
+          { id: 93, type: "order", q: "Susun Adjective Phrase (OSASCOMP): Pendapat - Ukuran - Bentuk - Bahan - Benda", words: ["table", "wooden", "small", "beautiful", "a", "round"], ans: "a beautiful small round wooden table" },
+          { id: 94, type: "order", q: "Susun Adjective Phrase (OSASCOMP): Pendapat - Umur - Warna - Asal - Benda", words: ["car", "Japanese", "red", "new", "an", "expensive"], ans: "an expensive new red Japanese car" },
+          { id: 95, type: "mcq", q: "Which noun phrase follows the CORRECT OSASCOMP adjective order?", options: ["a leather black small bag", "a small black leather bag", "a black small leather bag", "a leather small black bag"], ans: 1 },
+          { id: 96, type: "mcq", q: "My grandmother wears ___ to the wedding party.", options: ["a silk beautiful Indonesian dress", "an Indonesian beautiful silk dress", "a beautiful Indonesian silk dress", "a beautiful silk Indonesian dress"], ans: 2 },
+          { id: 97, type: "fill", q: "Rina found ___ in the school garden. (Size → Color → Noun)", choices: ["a tiny green caterpillar", "a green tiny caterpillar", "a caterpillar tiny green", "tiny a green caterpillar"], ans: "a tiny green caterpillar" },
+          { id: 98, type: "error", q: "Temukan SATU kata yang posisinya SALAH dalam urutan OSASCOMP (tap kata yang salah):", words: ["He", "bought", "a", "wooden", "old", "round", "chair", "yesterday."], ans: 3 },
+          { id: 99, type: "match", q: "Jodohkan contoh kata sifat dengan kategori OSASCOMP-nya!", pairs: [["lovely / expensive", "Opinion (Pendapat)"], ["ancient / new", "Age (Umur)"], ["wooden / leather", "Material (Bahan)"]], rightOrder: [2, 0, 1] },
+          { id: 100, type: "order", q: "SOAL TERAKHIR (#100)! Susun OSASCOMP: Pendapat - Ukuran - Warna - Bahan - Benda", words: ["box", "plastic", "blue", "large", "a", "useful"], ans: "a useful large blue plastic box" }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // 4. STATE MANAGEMENT & LOCAL STORAGE
+    // =========================================================================
+    let state = {
+      student: null,          // { name, kelas, absen }
+      view: "dashboard",      // "dashboard" | "module" | "recap"
+      currentModule: 0,       // 0..3
+      moduleTab: "material",  // "material" | "quiz"
+      quizPage: 0,            // 0-indexed pagination
+      answers: {},            // { qId: value }
+      attempts: 0,
+      bestScore: 0,
+      submitted: false
+    };
+
+    let activeMatchLeft = {}; // { qId: leftIdx }
+
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) state = { ...state, ...JSON.parse(raw) };
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // 5. MODAL & TOAST HELPERS (NO alert / NO confirm)
+    // =========================================================================
+    let modalConfirmCb = null;
+
+    function showModal({ title, message, icon = "ℹ️", confirmText = "Ya, Lanjutkan", cancelText = "Batal", confirmStyle = "primary", onConfirm = null }) {
+      document.getElementById("modal-title").textContent = title;
+      document.getElementById("modal-message").textContent = message;
+      document.getElementById("modal-icon").textContent = icon;
+
+      const confirmBtn = document.getElementById("modal-confirm-btn");
+      const cancelBtn = document.getElementById("modal-cancel-btn");
+      confirmBtn.textContent = confirmText;
+      cancelBtn.textContent = cancelText;
+      cancelBtn.style.display = cancelText ? "inline-flex" : "none";
+
+      const styleMap = {
+        primary: "bg-brand-600 hover:bg-brand-700 text-white",
+        emerald: "bg-emerald-600 hover:bg-emerald-700 text-white",
+        danger: "bg-rose-600 hover:bg-rose-700 text-white"
+      };
+      confirmBtn.className = `min-h-[44px] px-5 py-2 rounded-xl font-bold text-sm shadow-sm transition ${styleMap[confirmStyle] || styleMap.primary}`;
+
+      modalConfirmCb = onConfirm;
+      document.getElementById("custom-modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("custom-modal").classList.add("hidden");
+      modalConfirmCb = null;
+    }
+
+    document.getElementById("modal-cancel-btn").addEventListener("click", closeModal);
+    document.getElementById("modal-confirm-btn").addEventListener("click", () => {
+      const cb = modalConfirmCb;
+      closeModal();
+      if (typeof cb === "function") cb();
+    });
+
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toast-container");
+      const el = document.createElement("div");
+      const colors = {
+        info: "bg-slate-900 text-white",
+        success: "bg-emerald-600 text-white",
+        error: "bg-rose-600 text-white"
+      };
+      el.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-lg text-xs font-bold fade-in pointer-events-auto`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transition = "opacity 0.25s ease";
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    // =========================================================================
+    // 6. INISIALISASI & VALIDASI LOGIN KETAT (IX-A..IX-H & ABSEN 1..32)
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("login-logo-slot").innerHTML = renderSchoolLogo("login");
+      document.getElementById("sidebar-logo-slot").innerHTML = renderSchoolLogo("sidebar");
+      document.getElementById("mobile-logo-slot").innerHTML = renderSchoolLogo("mobile");
+
+      loadState();
+      if (state.student) {
+        openAppShell();
+      }
+    });
+
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById("login-error");
+      const name = document.getElementById("input-name").value.trim();
+      const kelas = document.getElementById("input-class").value;
+      const absenRaw = document.getElementById("input-absen").value.trim();
+      const absenNum = Number(absenRaw);
+
+      const allowedClasses = ["IX-A", "IX-B", "IX-C", "IX-D", "IX-E", "IX-F", "IX-G", "IX-H"];
+
+      if (name.length < 2) {
+        errBox.textContent = "Mohon isi Nama Lengkap dengan benar.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+      if (!allowedClasses.includes(kelas)) {
+        errBox.textContent = "Mohon pilih Kelas antara IX-A sampai IX-H.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+      if (!absenRaw || !Number.isInteger(absenNum) || absenNum < 1 || absenNum > 32) {
+        errBox.textContent = "Nomor Absen harus berupa angka antara 1 sampai 32.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+
+      errBox.classList.add("hidden");
+      state.student = { name, kelas, absen: absenNum };
+      state.view = "dashboard";
+      state.currentModule = 0;
+      state.moduleTab = "material";
+      state.quizPage = 0;
+      state.answers = {};
+      state.submitted = false;
+      saveState();
+      showToast(`Selamat datang, ${name}!`, "success");
+      openAppShell();
+    });
+
+    function openAppShell() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("app-shell").classList.remove("hidden");
+
+      const initials = state.student.name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0].toUpperCase())
+        .join("") || "S";
+
+      document.getElementById("sidebar-avatar").textContent = initials;
+      document.getElementById("mobile-avatar").textContent = initials;
+      document.getElementById("sidebar-student-name").textContent = state.student.name;
+      document.getElementById("sidebar-student-meta").textContent = `${state.student.kelas} • Absen ${state.student.absen}`;
+      document.getElementById("mobile-student-badge").textContent = `${state.student.kelas} • #${state.student.absen}`;
+
+      renderApp();
+    }
+
+    // =========================================================================
+    // 7. PENILAIAN 100 SOAL (7 TIPE INTERAKSI)
+    // =========================================================================
+    function getQuestionById(qId) {
+      for (const m of MODULES) {
+        const found = m.questions.find(q => q.id === qId);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function isQuestionAnswered(q) {
+      const val = state.answers[q.id];
+      if (val === undefined || val === null) return false;
+      if (q.type === "short") return String(val).trim().length > 0;
+      if (q.type === "order") return Array.isArray(val) && val.length === q.words.length;
+      if (q.type === "match") return typeof val === "object" && Object.keys(val).length === q.pairs.length;
+      return true;
+    }
+
+    function isQuestionCorrect(q) {
+      const val = state.answers[q.id];
+      if (!isQuestionAnswered(q)) return false;
+
+      if (q.type === "mcq" || q.type === "tf" || q.type === "error") return val === q.ans;
+      if (q.type === "fill") return val === q.ans;
+      if (q.type === "short") {
+        const cleaned = String(val).trim().toLowerCase().replace(/\s+/g, " ");
+        if (Array.isArray(q.ans)) return q.ans.map(a => a.toLowerCase()).includes(cleaned);
+        return cleaned === String(q.ans).trim().toLowerCase();
+      }
+      if (q.type === "order") {
+        const joined = val.map(i => q.words[i]).join(" ").trim().toLowerCase();
+        return joined === q.ans.trim().toLowerCase();
+      }
+      if (q.type === "match") {
+        return q.pairs.every((pair, i) => val[i] === pair[1]);
+      }
+      return false;
+    }
+
+    function getGlobalStats() {
+      const allQ = MODULES.flatMap(m => m.questions);
+      const answered = allQ.filter(q => isQuestionAnswered(q)).length;
+      return { answered, total: allQ.length, pct: Math.round((answered / allQ.length) * 100) };
+    }
+
+    function calculateResults() {
+      let totalCorrect = 0;
+      const breakdown = MODULES.map(m => {
+        let modCorrect = 0;
+        m.questions.forEach(q => { if (isQuestionCorrect(q)) modCorrect++; });
+        totalCorrect += modCorrect;
+        return {
+          code: m.code,
+          title: m.shortTitle,
+          icon: m.icon,
+          badgeBg: m.badgeBg,
+          badgeText: m.badgeText,
+          barColor: m.barColor,
+          correct: modCorrect,
+          total: m.questions.length
+        };
+      });
+      return { totalCorrect, finalScore: totalCorrect, breakdown };
+    }
+
+    // =========================================================================
+    // 8. NAVIGASI SHELL (SIDEBAR DESKTOP + BOTTOM BAR MOBILE)
+    // =========================================================================
+    function navigateTo(view, modIdx = null, tab = null) {
+      if (view !== "recap") stopConfetti();
+      state.view = view;
+      if (modIdx !== null) {
+        state.currentModule = modIdx;
+        state.quizPage = 0;
+      }
+      if (tab !== null) state.moduleTab = tab;
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function handleRecapNavClick() {
+      if (state.submitted) {
+        navigateTo("recap");
+      } else {
+        confirmFinishLMS();
+      }
+    }
+
+    function updateShellChrome() {
+      const { answered, total, pct } = getGlobalStats();
+
+      // Sidebar Progress
+      document.getElementById("sidebar-progress-pct").textContent = `${pct}%`;
+      document.getElementById("sidebar-progress-bar").style.width = `${pct}%`;
+      document.getElementById("sidebar-progress-text").textContent = `${answered} dari ${total} soal terjawab`;
+
+      // Desktop Sidebar Navigation Items
+      const navItems = [
+        { key: "dashboard", label: "Dashboard", icon: "🏠", active: state.view === "dashboard", onClick: "navigateTo('dashboard')" },
+        ...MODULES.map((m, idx) => {
+          const modAns = m.questions.filter(q => isQuestionAnswered(q)).length;
+          return {
+            key: `mod-${idx}`,
+            label: `${m.code}: ${m.shortTitle}`,
+            icon: m.icon,
+            badge: `${modAns}/${m.questions.length}`,
+            active: state.view === "module" && state.currentModule === idx,
+            onClick: `navigateTo('module', ${idx}, 'material')`
+          };
+        }),
+        { key: "recap", label: "Rekap Nilai", icon: "🏆", active: state.view === "recap", onClick: "handleRecapNavClick()" }
+      ];
+
+      document.getElementById("desktop-sidebar-nav").innerHTML = navItems.map(item => `
+        <button type="button" onclick="${item.onClick}"
+          class="w-full min-h-[44px] px-3 py-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between gap-2 transition
+          ${item.active ? 'bg-blue-50 text-brand-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
+          <span class="flex items-center gap-2.5 min-w-0">
+            <span class="text-base shrink-0">${item.icon}</span>
+            <span class="truncate">${item.label}</span>
+          </span>
+          ${item.badge ? `<span class="shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded-md ${item.active ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500'}">${item.badge}</span>` : ""}
+        </button>
+      `).join("");
+
+      // Mobile Bottom Navigation Active States
+      const bDash = document.getElementById("bnav-dashboard");
+      const bMod = document.getElementById("bnav-module");
+      const bRec = document.getElementById("bnav-recap");
+      [bDash, bMod, bRec].forEach(btn => {
+        btn.classList.remove("text-brand-600");
+        btn.classList.add("text-slate-400");
+      });
+      if (state.view === "dashboard") { bDash.classList.add("text-brand-600"); bDash.classList.remove("text-slate-400"); }
+      else if (state.view === "module") { bMod.classList.add("text-brand-600"); bMod.classList.remove("text-slate-400"); }
+      else if (state.view === "recap") { bRec.classList.add("text-brand-600"); bRec.classList.remove("text-slate-400"); }
+    }
+
+    function renderApp() {
+      updateShellChrome();
+      const ws = document.getElementById("main-workspace");
+      if (state.view === "dashboard") {
+        ws.innerHTML = renderDashboardView();
+      } else if (state.view === "module") {
+        ws.innerHTML = renderModuleView();
+      } else if (state.view === "recap") {
+        ws.innerHTML = renderRecapView();
+        runRecapScoreAnimation();
+      }
+    }
+
+    // =========================================================================
+    // 9. DASHBOARD ("BERANDA") VIEW — SMART CLASS CLEAN STYLE
+    // =========================================================================
+    function renderDashboardView() {
+      const { answered, total } = getGlobalStats();
+      const firstName = state.student.name.split(" ")[0];
+
+      return `
+        <div class="fade-in space-y-6">
+          <!-- Welcome Blue Hero Banner (Smart Class Style) -->
+          <div class="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white rounded-3xl p-6 sm:p-7 shadow-soft relative overflow-hidden">
+            <div class="pointer-events-none absolute -right-10 -top-10 w-44 h-44 rounded-full bg-white/10"></div>
+            <div class="pointer-events-none absolute right-12 -bottom-12 w-32 h-32 rounded-full bg-white/10"></div>
+
+            <div class="relative z-10">
+              <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hi, ${firstName} 👋</h1>
+              <p class="text-sm text-blue-100 mt-1 font-medium">
+                Selamat datang di <strong>Mr.spena English Class</strong> • SMPN 6 Blitar
+              </p>
+
+              <!-- Translucent Pill Chips -->
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-xs text-xs font-bold">
+                  🎓 ${state.student.kelas} • Absen ${state.student.absen}
+                </span>
+                <span class="px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-xs text-xs font-bold">
+                  📚 Estimasi ±2 Jam
+                </span>
+                <span class="px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-xs text-xs font-bold">
+                  ✓ Progres: ${answered}/${total}
+                </span>
+                <span class="px-3.5 py-1.5 rounded-full bg-amber-400/25 border border-amber-300/40 text-amber-100 text-xs font-bold">
+                  🏆 Best Score: ${state.bestScore}/100
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daftar Unit Pembelajaran (4 Module Cards) -->
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between px-1">
+              <div>
+                <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Daftar Unit Pembelajaran</h2>
+                <p class="text-xs text-slate-500 font-medium">Persiapan SAS Semester 1 Bahasa Inggris Kelas IX</p>
+              </div>
+              <span class="text-xs font-bold text-brand-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                4 Modul
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              ${MODULES.map((m, idx) => {
+                const modAns = m.questions.filter(q => isQuestionAnswered(q)).length;
+                const modPct = Math.round((modAns / m.questions.length) * 100);
+                return `
+                  <button type="button" onclick="navigateTo('module', ${idx}, 'material')"
+                    class="w-full text-left bg-white hover:border-blue-300 hover:shadow-card-hover active:scale-[0.995] rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-soft transition group">
+                    <div class="flex items-center gap-3.5 sm:gap-4">
+                      <!-- Colorful 40x40 Icon Badge -->
+                      <div class="w-11 h-11 shrink-0 rounded-xl ${m.badgeBg} ${m.badgeText} flex items-center justify-center text-xl shadow-xs">
+                        ${m.icon}
+                      </div>
+
+                      <!-- Title & Subtitle -->
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[11px] font-extrabold uppercase tracking-wide ${m.badgeText}">${m.code}</span>
+                          <span class="text-[11px] text-slate-400 font-semibold">• ${m.estimate}</span>
+                        </div>
+                        <h3 class="text-[15px] sm:text-base font-extrabold text-slate-900 group-hover:text-brand-600 transition truncate mt-0.5">
+                          ${m.title}
+                        </h3>
+                        <p class="text-xs text-slate-500 truncate mt-0.5">${m.desc}</p>
+                      </div>
+
+                      <!-- Fraction Counter -->
+                      <div class="shrink-0 text-right pl-2">
+                        <div class="text-sm sm:text-base font-extrabold ${modAns === m.questions.length ? 'text-emerald-600' : 'text-slate-800'} tabular-nums">
+                          ${modAns}/${m.questions.length}
+                        </div>
+                        <div class="text-[10px] font-bold text-slate-400">soal</div>
+                      </div>
+                    </div>
+
+                    <!-- Slim Progress Bar -->
+                    <div class="mt-3.5 w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div class="h-full ${m.barColor} rounded-full transition-all duration-300" style="width: ${modPct}%"></div>
+                    </div>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- Quick Action Card: Selesai & Hitung Nilai Akhir -->
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="text-sm font-extrabold text-slate-900">Sudah menyelesaikan semua modul?</div>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Hitung nilai akhirmu (maksimal 100 poin) dan kirim laporan ke Mr. Feri.
+              </p>
+            </div>
+            <button type="button" onclick="confirmFinishLMS()"
+              class="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm transition shrink-0">
+              Selesai & Hitung Nilai Akhir →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 10. MODULE VIEW (BACK BAR + UNDERLINE TABS + MATERI / LATIHAN)
+    // =========================================================================
+    function renderModuleView() {
+      const mod = MODULES[state.currentModule];
+      const modAns = mod.questions.filter(q => isQuestionAnswered(q)).length;
+
+      return `
+        <div class="fade-in space-y-5">
+          <!-- Clean Top Back Bar & Underline Tabs (Smart Class Style) -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden">
+            <div class="px-4 sm:px-6 pt-4 pb-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <button type="button" onclick="navigateTo('dashboard')"
+                  class="min-h-[40px] px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition shrink-0 flex items-center gap-1">
+                  <span>←</span>
+                  <span>Kembali</span>
+                </button>
+                <div class="min-w-0">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase">${mod.code} • ${mod.estimate}</div>
+                  <h2 class="text-sm sm:text-base font-extrabold text-slate-900 truncate">${mod.shortTitle}</h2>
+                </div>
+              </div>
+              <span class="shrink-0 px-2.5 py-1 rounded-lg bg-blue-50 text-brand-600 text-xs font-extrabold">
+                ${modAns}/${mod.questions.length}
+              </span>
+            </div>
+
+            <!-- Clean Blue Bottom Underline Tabs -->
+            <div class="px-4 sm:px-6 border-t border-slate-100 flex gap-6">
+              <button type="button" onclick="switchModuleTab('material')"
+                class="min-h-[46px] py-3 text-sm font-bold border-b-2 transition
+                ${state.moduleTab === 'material' ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-800'}">
+                Materi & Video
+              </button>
+              <button type="button" onclick="switchModuleTab('quiz')"
+                class="min-h-[46px] py-3 text-sm font-bold border-b-2 transition
+                ${state.moduleTab === 'quiz' ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-800'}">
+                Latihan Soal (${mod.questions.length})
+              </button>
+            </div>
+          </div>
+
+          ${state.moduleTab === "material" ? renderMaterialTab(mod) : renderQuizTab(mod)}
+        </div>
+      `;
+    }
+
+    function switchModuleTab(tab) {
+      state.moduleTab = tab;
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // --- TAB 1: MATERI, VIDEO YOUTUBE, 3D FLASHCARDS & KAHOOT/QUIZIZZ ---
+    function renderMaterialTab(mod) {
+      return `
+        <!-- Ringkasan Materi -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-soft space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl ${mod.badgeBg} ${mod.badgeText} flex items-center justify-center text-lg shrink-0">${mod.icon}</div>
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">Ringkasan Materi ${mod.code}</h3>
+              <p class="text-xs text-slate-500">Poin penting sesuai kisi-kisi SAS 1 SMPN 6 Blitar</p>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3 text-sm leading-relaxed">
+            ${mod.summaryCards.map(c => `
+              <div class="p-4 rounded-xl border ${c.color}">
+                <div class="font-extrabold mb-1">${c.title}</div>
+                <p class="text-xs sm:text-sm opacity-90 leading-relaxed">${c.body}</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- Video Pembelajaran YouTube (16:9 + Fallback Button) -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-soft space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-rose-600">Video Pembelajaran</span>
+              <h3 class="text-base font-extrabold text-slate-900">${mod.videoTitle}</h3>
+            </div>
+            <a href="https://www.youtube.com/watch?v=${mod.videoId}" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center gap-1.5 min-h-[42px] px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition shrink-0">
+              <span>▶</span>
+              <span>Tonton Langsung di YouTube ↗</span>
+            </a>
+          </div>
+          <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-200">
+            <iframe
+              class="absolute inset-0 w-full h-full"
+              src="https://www.youtube.com/embed/${mod.videoId}?rel=0"
+              title="${mod.videoTitle}"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+
+        <!-- 3D Flip-Flashcards (4 Kartu Interaktif) -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-soft space-y-4">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">Flashcards Interaktif</h3>
+              <p class="text-xs text-slate-500">Tap kartu untuk membalik dan melihat penjelasan</p>
+            </div>
+            <span class="text-xs font-bold text-brand-600 bg-blue-50 px-2.5 py-1 rounded-lg">4 Kartu</span>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3.5">
+            ${mod.flashcards.map((fc, i) => `
+              <div onclick="this.classList.toggle('is-flipped')" class="flip-card perspective-1000 h-36 cursor-pointer">
+                <div class="flip-inner">
+                  <div class="flip-front rounded-xl bg-gradient-to-br from-brand-600 to-brand-700 text-white p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-white/20">${fc.hint}</span>
+                      <span class="text-[11px] font-semibold text-blue-100">Tap balik ↻</span>
+                    </div>
+                    <div class="text-base font-extrabold leading-snug">${fc.front}</div>
+                    <div class="text-[11px] text-blue-100">Kartu ${i + 1}/4</div>
+                  </div>
+                  <div class="flip-back rounded-xl bg-blue-50 border-2 border-brand-500 text-slate-800 p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-extrabold uppercase text-brand-600">Penjelasan</span>
+                      <span class="text-[11px] font-semibold text-slate-400">Tutup ↻</span>
+                    </div>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">${fc.back}</p>
+                    <div class="text-[11px] font-bold text-brand-600 truncate">${fc.front}</div>
+                  </div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- Arena Tantangan Eksternal: Kahoot! & Quizizz -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-soft space-y-3.5">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Arena Tantangan Eksternal</h3>
+            <p class="text-xs text-slate-500">Latihan tambahan seru bersama teman kelas</p>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <a href="${CONFIG.kahootUrl}" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-between gap-3 p-4 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100/70 transition">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg shrink-0">🎮</span>
+                <div>
+                  <div class="text-sm font-extrabold text-purple-900">Kahoot!</div>
+                  <div class="text-xs text-purple-700">Buka kuis interaktif ↗</div>
+                </div>
+              </div>
+            </a>
+            <a href="${CONFIG.quizizzUrl}" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-between gap-3 p-4 rounded-xl border border-fuchsia-200 bg-fuchsia-50/70 hover:bg-fuchsia-100/70 transition">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-fuchsia-600 text-white flex items-center justify-center text-lg shrink-0">⚡</span>
+                <div>
+                  <div class="text-sm font-extrabold text-fuchsia-900">Quizizz</div>
+                  <div class="text-xs text-fuchsia-700">Gabung latihan kuis ↗</div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- CTA Menuju Latihan Soal -->
+        <button type="button" onclick="switchModuleTab('quiz')"
+          class="w-full min-h-[52px] bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-[15px] rounded-2xl shadow-sm transition flex items-center justify-center gap-2">
+          <span>Mulai Latihan Soal Modul Ini (${mod.questions.length} Soal)</span>
+          <span>→</span>
+        </button>
+      `;
+    }
+
+    // --- TAB 2: LATIHAN SOAL (PAGINASI 10 SOAL / HALAMAN) ---
+    function renderQuizTab(mod) {
+      const totalPages = Math.ceil(mod.questions.length / CONFIG.questionsPerPage);
+      if (state.quizPage >= totalPages) state.quizPage = 0;
+
+      const startIdx = state.quizPage * CONFIG.questionsPerPage;
+      const pageQs = mod.questions.slice(startIdx, startIdx + CONFIG.questionsPerPage);
+
+      let html = `
+        <!-- Page Pills Bar -->
+        <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200 shadow-soft flex flex-wrap items-center justify-between gap-2.5">
+          <div class="text-xs font-bold text-slate-600">
+            Soal #${pageQs[0].id} – #${pageQs[pageQs.length - 1].id}
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${Array.from({ length: totalPages }, (_, pIdx) => {
+              const slice = mod.questions.slice(pIdx * CONFIG.questionsPerPage, (pIdx + 1) * CONFIG.questionsPerPage);
+              const done = slice.filter(q => isQuestionAnswered(q)).length;
+              const active = pIdx === state.quizPage;
+              return `
+                <button type="button" onclick="switchQuizPage(${pIdx})"
+                  class="min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-bold border transition
+                  ${active ? 'bg-brand-600 text-white border-brand-600 shadow-xs' : 'bg-slate-50 hover:bg-blue-50 text-slate-700 border-slate-200'}">
+                  Hal ${pIdx + 1} <span class="opacity-80">(${done}/${slice.length})</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+
+      // Render Teks Bacaan & Soal di halaman ini
+      let lastPassage = null;
+      pageQs.forEach(q => {
+        if (q.passage && q.passage !== lastPassage) {
+          const p = mod.passages[q.passage];
+          html += `
+            <article class="bg-[#FFFBEB] border border-amber-200 rounded-2xl p-5 sm:p-6 shadow-soft space-y-2.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md bg-amber-200/80 text-amber-900 text-[10px] font-extrabold uppercase tracking-wider">${p.tag}</span>
+                <h4 class="text-base font-extrabold text-slate-900">${p.title}</h4>
+              </div>
+              <div class="text-[15px] text-slate-800 leading-relaxed">${p.body}</div>
+            </article>
+          `;
+          lastPassage = q.passage;
+        }
+        html += renderQuestionCard(q);
+      });
+
+      // Navigasi Bawah Halaman / Modul
+      const isLastPage = state.quizPage === totalPages - 1;
+      const isLastMod = state.currentModule === MODULES.length - 1;
+
+      html += `
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-soft flex items-center justify-between gap-3">
+          ${state.quizPage > 0 ? `
+            <button type="button" onclick="switchQuizPage(${state.quizPage - 1})"
+              class="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+              ← Hal ${state.quizPage}
+            </button>
+          ` : `
+            <button type="button" onclick="switchModuleTab('material')"
+              class="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+              ← Materi
+            </button>
+          `}
+
+          ${!isLastPage ? `
+            <button type="button" onclick="switchQuizPage(${state.quizPage + 1})"
+              class="min-h-[46px] px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-xs transition">
+              Lanjut Hal ${state.quizPage + 2} →
+            </button>
+          ` : (!isLastMod ? `
+            <button type="button" onclick="navigateTo('module', ${state.currentModule + 1}, 'material')"
+              class="min-h-[46px] px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-xs transition">
+              Lanjut ${MODULES[state.currentModule + 1].code} →
+            </button>
+          ` : `
+            <button type="button" onclick="confirmFinishLMS()"
+              class="min-h-[46px] px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xs transition">
+              Selesai & Hitung Nilai ✓
+            </button>
+          `)}
+        </div>
+      `;
+
+      return html;
+    }
+
+    function switchQuizPage(pIdx) {
+      state.quizPage = pIdx;
+      saveState();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // =========================================================================
+    // 11. RENDER KARTU SOAL UNTUK 7 TIPE INTERAKSI (THUMB-FRIENDLY)
+    // =========================================================================
+    function renderQuestionCard(q) {
+      const saved = state.answers[q.id];
+      const answered = isQuestionAnswered(q);
+      const typeInfo = {
+        mcq: { label: "Pilihan Ganda", cls: "bg-blue-50 text-brand-600" },
+        tf: { label: "Benar / Salah", cls: "bg-teal-50 text-teal-700" },
+        fill: { label: "Tap-to-Fill", cls: "bg-indigo-50 text-indigo-700" },
+        match: { label: "Menjodohkan", cls: "bg-purple-50 text-purple-700" },
+        order: { label: "Susun Kata", cls: "bg-amber-50 text-amber-700" },
+        short: { label: "Isian Singkat", cls: "bg-emerald-50 text-emerald-700" },
+        error: { label: "Temukan Kesalahan", cls: "bg-rose-50 text-rose-700" }
+      }[q.type];
+
+      let body = "";
+
+      // 1 & 2. Pilihan Ganda & Benar/Salah
+      if (q.type === "mcq" || q.type === "tf") {
+        const letters = ["A", "B", "C", "D"];
+        body = `<div class="grid ${q.type === 'tf' ? 'grid-cols-2' : 'grid-cols-1'} gap-2.5 mt-4">` +
+          q.options.map((opt, i) => {
+            const sel = saved === i;
+            return `
+              <button type="button" onclick="onSelectOption(${q.id}, ${i})"
+                class="min-h-[48px] text-left px-4 py-3 rounded-xl border-2 transition flex items-center gap-3 text-[15px]
+                ${sel ? 'border-brand-600 bg-blue-50 text-slate-900 font-bold' : 'border-slate-200 bg-white hover:border-blue-300 text-slate-700 font-medium'}">
+                <span class="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold
+                  ${sel ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'}">
+                  ${q.type === 'tf' ? (i === 0 ? '✓' : '✗') : letters[i]}
+                </span>
+                <span class="leading-snug">${opt}</span>
+              </button>
+            `;
+          }).join("") + `</div>`;
+      }
+
+      // 3. Tap-to-Fill
+      else if (q.type === "fill") {
+        body = `
+          <div class="flex flex-wrap gap-2.5 mt-4">
+            ${q.choices.map(ch => {
+              const sel = saved === ch;
+              const safe = ch.replace(/'/g, "\\'");
+              return `
+                <button type="button" onclick="onSelectFill(${q.id}, '${safe}')"
+                  class="min-h-[44px] px-4 py-2.5 rounded-xl border-2 text-[15px] font-bold transition
+                  ${sel ? 'border-brand-600 bg-brand-600 text-white shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-brand-500 text-slate-700'}">
+                  ${ch}
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      // 4. Menjodohkan 3 Pasangan
+      else if (q.type === "match") {
+        const userMap = (saved && typeof saved === "object") ? saved : {};
+        const activeL = activeMatchLeft[q.id];
+        const colors = [
+          { tag: "bg-brand-600 text-white", box: "border-brand-500 bg-blue-50" },
+          { tag: "bg-amber-500 text-white", box: "border-amber-400 bg-amber-50" },
+          { tag: "bg-emerald-600 text-white", box: "border-emerald-500 bg-emerald-50" }
+        ];
+        const rightItems = q.rightOrder.map(i => q.pairs[i][1]);
+
+        body = `
+          <div class="mt-4 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-500 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+              <span>Tap 1 kotak <strong>Kiri</strong>, lalu tap pasangannya di <strong>Kanan</strong>.</span>
+              ${Object.keys(userMap).length > 0 ? `<button type="button" onclick="onResetMatch(${q.id})" class="text-rose-600 font-bold shrink-0 ml-2">↺ Reset</button>` : ""}
+            </div>
+            <div class="grid sm:grid-cols-2 gap-2.5">
+              <div class="space-y-2">
+                ${q.pairs.map((pair, lIdx) => {
+                  const matched = userMap[lIdx] !== undefined;
+                  const active = activeL === lIdx;
+                  const c = colors[lIdx % colors.length];
+                  return `
+                    <button type="button" onclick="onClickMatchLeft(${q.id}, ${lIdx})"
+                      class="w-full min-h-[46px] text-left px-3.5 py-2.5 rounded-xl border-2 text-sm font-bold transition flex items-center justify-between gap-2
+                      ${active ? 'border-brand-600 bg-brand-600 text-white' : (matched ? c.box + ' text-slate-900' : 'border-slate-200 bg-white text-slate-800')}">
+                      <span class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-md flex items-center justify-center text-xs font-extrabold ${active ? 'bg-white text-brand-600' : c.tag}">${lIdx + 1}</span>
+                        <span>${pair[0]}</span>
+                      </span>
+                      ${matched ? `<span class="text-[11px] font-bold text-emerald-700">✓</span>` : ""}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+              <div class="space-y-2">
+                ${rightItems.map(rText => {
+                  const mKey = Object.keys(userMap).find(k => userMap[k] === rText);
+                  const used = mKey !== undefined;
+                  const c = used ? colors[Number(mKey) % colors.length] : null;
+                  const safeR = rText.replace(/'/g, "\\'");
+                  return `
+                    <button type="button" onclick="onClickMatchRight(${q.id}, '${safeR}')"
+                      class="w-full min-h-[46px] text-left px-3.5 py-2.5 rounded-xl border-2 text-sm transition flex items-center justify-between gap-2
+                      ${used ? c.box + ' text-slate-900 font-bold' : (activeL !== undefined ? 'border-blue-300 bg-blue-50/50 text-slate-800 font-semibold' : 'border-slate-200 bg-slate-50 text-slate-700 font-medium')}">
+                      <span>${rText}</span>
+                      ${used ? `<span class="shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-extrabold ${c.tag}">${Number(mKey) + 1}</span>` : ""}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 5. Susun Kata (Word-Tile Builder)
+      else if (q.type === "order") {
+        const chosen = Array.isArray(saved) ? saved : [];
+        const remaining = q.words.map((_, i) => i).filter(i => !chosen.includes(i));
+        body = `
+          <div class="mt-4 space-y-3">
+            <div class="min-h-[56px] p-3 rounded-xl border-2 border-dashed ${chosen.length === q.words.length ? 'border-brand-500 bg-blue-50/60' : 'border-slate-300 bg-slate-50'} flex flex-wrap gap-2 items-center">
+              ${chosen.length === 0
+                ? `<span class="text-xs text-slate-400 italic">Tap kata-kata di bawah secara berurutan untuk menyusun jawaban...</span>`
+                : chosen.map((wIdx, pos) => `
+                    <button type="button" onclick="onRemoveOrderTile(${q.id}, ${pos})"
+                      class="word-tile min-h-[40px] px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-rose-600 text-white text-sm font-bold shadow-xs">
+                      ${q.words[wIdx]}
+                    </button>
+                  `).join("")
+              }
+            </div>
+            <div class="flex flex-wrap gap-2 items-center">
+              ${remaining.map(wIdx => `
+                <button type="button" onclick="onAddOrderTile(${q.id}, ${wIdx})"
+                  class="word-tile min-h-[40px] px-3.5 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-brand-600 text-slate-800 text-sm font-bold shadow-xs">
+                  ${q.words[wIdx]}
+                </button>
+              `).join("")}
+              ${chosen.length > 0 ? `
+                <button type="button" onclick="onClearOrder(${q.id})" class="ml-auto text-xs font-bold text-rose-600 px-2 py-1">
+                  ↺ Reset
+                </button>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      // 6. Isian Singkat
+      else if (q.type === "short") {
+        const val = typeof saved === "string" ? saved.replace(/"/g, "&quot;") : "";
+        body = `
+          <div class="mt-4">
+            <input type="text" value="${val}"
+              placeholder="${q.placeholder || 'Ketik jawabanmu...'}"
+              oninput="onShortInput(${q.id}, this.value)"
+              class="w-full sm:max-w-sm min-h-[48px] px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-brand-600 focus:ring-4 focus:ring-blue-100 focus:outline-none text-[15px] font-bold text-slate-900 transition" />
+            <p class="text-[11px] text-slate-400 mt-1.5">Huruf besar/kecil tidak berpengaruh.</p>
+          </div>
+        `;
+      }
+
+      // 7. Temukan Kesalahan (Tappable Word Pills)
+      else if (q.type === "error") {
+        body = `
+          <div class="mt-4">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap gap-2">
+              ${q.words.map((word, i) => {
+                const sel = saved === i;
+                return `
+                  <button type="button" onclick="onSelectOption(${q.id}, ${i})"
+                    class="min-h-[42px] px-3.5 py-1.5 rounded-xl border-2 text-[15px] font-bold transition
+                    ${sel ? 'border-rose-600 bg-rose-600 text-white shadow-xs' : 'border-slate-200 bg-white hover:border-rose-400 text-slate-800'}">
+                    ${word}
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div id="q-card-${q.id}" class="bg-white rounded-2xl p-5 border ${answered ? 'border-blue-300' : 'border-slate-200'} shadow-soft transition">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg ${answered ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700'} text-xs font-extrabold">
+                No. ${q.id}
+              </span>
+              ${answered ? `<span class="text-xs font-bold text-emerald-600">✓ Terjawab</span>` : ""}
+            </div>
+            <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${typeInfo.cls}">
+              ${typeInfo.label}
+            </span>
+          </div>
+          <p class="text-[15px] sm:text-base font-bold text-slate-900 leading-relaxed">${q.q}</p>
+          ${body}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 12. HANDLER INTERAKSI JAWABAN
+    // =========================================================================
+    function refreshCard(qId) {
+      const q = getQuestionById(qId);
+      const el = document.getElementById(`q-card-${qId}`);
+      if (el && q) {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = renderQuestionCard(q);
+        el.replaceWith(tmp.firstElementChild);
+      }
+      saveState();
+      updateShellChrome();
+    }
+
+    function onSelectOption(qId, idx) {
+      state.answers[qId] = idx;
+      refreshCard(qId);
+    }
+
+    function onSelectFill(qId, val) {
+      state.answers[qId] = val;
+      refreshCard(qId);
+    }
+
+    function onShortInput(qId, val) {
+      state.answers[qId] = val;
+      saveState();
+      updateShellChrome();
+      const card = document.getElementById(`q-card-${qId}`);
+      if (card) {
+        const filled = val.trim().length > 0;
+        card.classList.toggle("border-blue-300", filled);
+        card.classList.toggle("border-slate-200", !filled);
+      }
+    }
+
+    function onAddOrderTile(qId, wIdx) {
+      const arr = Array.isArray(state.answers[qId]) ? [...state.answers[qId]] : [];
+      if (!arr.includes(wIdx)) arr.push(wIdx);
+      state.answers[qId] = arr;
+      refreshCard(qId);
+    }
+
+    function onRemoveOrderTile(qId, pos) {
+      const arr = Array.isArray(state.answers[qId]) ? [...state.answers[qId]] : [];
+      arr.splice(pos, 1);
+      state.answers[qId] = arr;
+      refreshCard(qId);
+    }
+
+    function onClearOrder(qId) {
+      state.answers[qId] = [];
+      refreshCard(qId);
+    }
+
+    function onClickMatchLeft(qId, lIdx) {
+      activeMatchLeft[qId] = (activeMatchLeft[qId] === lIdx) ? undefined : lIdx;
+      refreshCard(qId);
+    }
+
+    function onClickMatchRight(qId, rText) {
+      const lIdx = activeMatchLeft[qId];
+      if (lIdx === undefined) {
+        showToast("Tap dulu salah satu kotak di kolom kiri!", "info");
+        return;
+      }
+      const map = (state.answers[qId] && typeof state.answers[qId] === "object")
+        ? { ...state.answers[qId] } : {};
+      Object.keys(map).forEach(k => { if (map[k] === rText) delete map[k]; });
+      map[lIdx] = rText;
+      state.answers[qId] = map;
+      activeMatchLeft[qId] = undefined;
+      refreshCard(qId);
+    }
+
+    function onResetMatch(qId) {
+      state.answers[qId] = {};
+      activeMatchLeft[qId] = undefined;
+      refreshCard(qId);
+    }
+
+    // =========================================================================
+    // 13. REKAP NILAI, SELEBRASI CONFETTI & KIRIM TEKS WA MR. FERI
+    // =========================================================================
+    function confirmFinishLMS() {
+      const { answered, total } = getGlobalStats();
+      const missing = total - answered;
+
+      showModal({
+        title: missing > 0 ? `Masih Ada ${missing} Soal Belum Dijawab` : "Hitung Nilai Akhir Sekarang?",
+        icon: missing > 0 ? "⚠️" : "🎓",
+        message: missing > 0
+          ? `Kamu baru menjawab ${answered} dari ${total} soal. Yakin ingin mengakhiri percobaan ini dan melihat nilaimu?`
+          : "Keren! Semua 100 soal sudah kamu jawab. Siap melihat nilai akhir di Mr.spena English Class?",
+        confirmText: "Ya, Lihat Nilai",
+        cancelText: "Cek Lagi",
+        confirmStyle: "emerald",
+        onConfirm: () => {
+          const { finalScore } = calculateResults();
+          state.attempts = (state.attempts || 0) + 1;
+          if (finalScore > (state.bestScore || 0)) {
+            state.bestScore = finalScore;
+          }
+          state.submitted = true;
+          state.view = "recap";
+          saveState();
+          renderApp();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    }
+
+    function renderRecapView() {
+      const { totalCorrect, finalScore, breakdown } = calculateResults();
+      let trophy = "💪", badgeText = "TERUS BERLATIH — Ulangi untuk Nilai Tertinggi!", badgeCls = "bg-rose-50 text-rose-700 border-rose-200";
+      if (finalScore >= 90) {
+        trophy = "🏆"; badgeText = "ISTIMEWA (A) — Siap Juara SAS 1!"; badgeCls = "bg-emerald-50 text-emerald-700 border-emerald-200";
+      } else if (finalScore >= 80) {
+        trophy = "🥇"; badgeText = "SANGAT BAIK (B+) — Pertahankan!"; badgeCls = "bg-blue-50 text-brand-700 border-blue-200";
+      } else if (finalScore >= 70) {
+        trophy = "⭐"; badgeText = "BAIK (B) — Sedikit Lagi Sempurna!"; badgeCls = "bg-amber-50 text-amber-700 border-amber-200";
+      }
+
+      return `
+        <div class="fade-in space-y-5">
+          <!-- Main Result Card (Clean White) -->
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-soft overflow-hidden">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white p-6 text-center">
+              <div class="text-xs font-bold uppercase tracking-wider text-blue-100">Mr.spena English Class • SMPN 6 Blitar</div>
+              <h2 class="text-2xl font-extrabold mt-1">Hasil Belajar SAS Semester 1</h2>
+            </div>
+
+            <div class="p-5 sm:p-7 space-y-6">
+              <!-- Info Siswa -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-4 text-sm">
+                <div class="col-span-2 sm:col-span-1">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase">Nama</div>
+                  <div class="font-extrabold text-slate-900 mt-0.5 truncate">${state.student.name}</div>
+                </div>
+                <div>
+                  <div class="text-[11px] font-bold text-slate-400 uppercase">Kelas</div>
+                  <div class="font-extrabold text-slate-900 mt-0.5">${state.student.kelas}</div>
+                </div>
+                <div>
+                  <div class="text-[11px] font-bold text-slate-400 uppercase">No. Absen</div>
+                  <div class="font-extrabold text-slate-900 mt-0.5">${state.student.absen}</div>
+                </div>
+                <div>
+                  <div class="text-[11px] font-bold text-slate-400 uppercase">Best Score</div>
+                  <div class="font-extrabold text-amber-600 mt-0.5">${state.bestScore}/100</div>
+                </div>
+              </div>
+
+              <!-- Score Counter & Badge -->
+              <div class="text-center py-5 px-4 rounded-2xl bg-gradient-to-b from-blue-50/70 to-white border border-blue-100">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-100 text-3xl animate-float mb-2 shadow-xs">
+                  ${trophy}
+                </div>
+                <div class="text-xs font-bold uppercase tracking-wider text-brand-600">Nilai Akhir (Maksimal 100)</div>
+                <div class="flex items-baseline justify-center gap-1 my-1">
+                  <span id="animated-score" class="text-6xl font-black text-slate-900 tabular-nums">0</span>
+                  <span class="text-lg font-bold text-slate-400">/ 100</span>
+                </div>
+                <div class="inline-block px-4 py-1.5 rounded-full text-xs font-extrabold border mt-2 ${badgeCls}">
+                  ${badgeText}
+                </div>
+                <div class="text-xs text-slate-500 font-semibold mt-2.5">
+                  Benar ${totalCorrect} dari 100 soal • Percobaan ke-${state.attempts || 1}
+                </div>
+              </div>
+
+              <!-- Per-Module Breakdown (Tanpa Pembahasan / Kunci Jawaban) -->
+              <div class="space-y-2.5">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Rincian Skor Per Modul</h3>
+                ${breakdown.map(b => {
+                  const pct = Math.round((b.correct / b.total) * 100);
+                  return `
+                    <div class="p-3.5 rounded-2xl bg-[#F8FAFC] border border-slate-200/80">
+                      <div class="flex items-center justify-between gap-2 text-sm mb-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                          <span class="w-8 h-8 rounded-lg ${b.badgeBg} ${b.badgeText} flex items-center justify-center text-sm shrink-0">${b.icon}</span>
+                          <span class="font-bold text-slate-800 truncate">${b.code}: ${b.title}</span>
+                        </div>
+                        <span class="font-extrabold text-slate-900 shrink-0 tabular-nums">${b.correct}/${b.total}</span>
+                      </div>
+                      <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div class="h-full ${b.barColor} rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+
+              <!-- Action Buttons (Kirim WA Teks Saja + Ulangi Latihan) -->
+              <div class="grid sm:grid-cols-2 gap-3 pt-2">
+                <button type="button" onclick="sendWhatsAppReport()"
+                  class="w-full min-h-[52px] px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                  <span class="text-lg">💬</span>
+                  <span>Kirim Hasil ke WA Mr. Feri</span>
+                </button>
+                <button type="button" onclick="confirmRetryForHigherScore()"
+                  class="w-full min-h-[52px] px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                  <span class="text-lg">🔄</span>
+                  <span>Ulangi Latihan untuk Nilai Tertinggi</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function runRecapScoreAnimation() {
+      const { finalScore } = calculateResults();
+      const el = document.getElementById("animated-score");
+      if (!el) return;
+
+      let current = 0;
+      const step = Math.max(1, Math.ceil(finalScore / 32));
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= finalScore) {
+          el.textContent = finalScore;
+          clearInterval(timer);
+        } else {
+          el.textContent = current;
+        }
+      }, 24);
+
+      startConfetti();
+    }
+
+    function sendWhatsAppReport() {
+      const { totalCorrect, finalScore, breakdown } = calculateResults();
+      const rincian = breakdown.map(b => `▪️ ${b.code} (${b.title}): ${b.correct}/${b.total}`).join("\n");
+      const predikat = finalScore >= 90 ? "ISTIMEWA 🏆" : (finalScore >= 80 ? "SANGAT BAIK 🥇" : (finalScore >= 70 ? "BAIK ⭐" : "TERUS BERLATIH 💪"));
+
+      const text =
+`Assalamu'alaikum ${CONFIG.teacherName}, izin melaporkan hasil belajar di *${CONFIG.lmsName}* (${CONFIG.schoolName} — Bahasa Inggris Kelas IX) 🎓✨
+
+👤 *Nama:* ${state.student.name}
+🏫 *Kelas:* ${state.student.kelas}
+🔢 *No. Absen:* ${state.student.absen}
+🔁 *Percobaan:* Ke-${state.attempts || 1}
+
+🌟 *NILAI AKHIR: ${finalScore} / 100*
+🏅 *Predikat:* ${predikat}
+🏆 *Best Score:* ${state.bestScore} / 100
+✅ *Total Benar:* ${totalCorrect} dari 100 soal
+
+📊 *Rincian Skor:*
+${rincian}
+
+Terima kasih, ${CONFIG.teacherName}! 🙏`;
+
+      window.open(`https://wa.me/${CONFIG.waNumber}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+      showToast("Membuka WhatsApp untuk mengirim laporan ke Mr. Feri...", "success");
+    }
+
+    function confirmRetryForHigherScore() {
+      showModal({
+        title: "Ulangi Latihan?",
+        icon: "🚀",
+        message: "Jawaban saat ini akan direset agar kamu bisa berlatih ulang dan mencetak Best Score lebih tinggi. Identitas dan Best Score tetap tersimpan.",
+        confirmText: "Ya, Ulangi Sekarang",
+        cancelText: "Batal",
+        confirmStyle: "primary",
+        onConfirm: () => {
+          stopConfetti();
+          state.answers = {};
+          state.submitted = false;
+          state.view = "dashboard";
+          state.currentModule = 0;
+          state.moduleTab = "material";
+          state.quizPage = 0;
+          activeMatchLeft = {};
+          saveState();
+          showToast("Semangat! Raih nilai tertinggimu!", "success");
+          renderApp();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    }
+
+    function confirmChangeAccount() {
+      showModal({
+        title: "Ganti Akun / Keluar?",
+        icon: "👤",
+        message: "Kamu akan kembali ke halaman pengisian identitas awal. Progres pada perangkat ini akan dihapus.",
+        confirmText: "Ya, Keluar",
+        cancelText: "Batal",
+        confirmStyle: "danger",
+        onConfirm: () => {
+          stopConfetti();
+          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+          location.reload();
+        }
+      });
+    }
+
+    // =========================================================================
+    // 14. LIGHTWEIGHT PURE JS CONFETTI ANIMATION
+    // =========================================================================
+    let confettiFrameId = null;
+
+    function startConfetti() {
+      stopConfetti();
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      const resize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      resize();
+
+      const palette = ["#2563EB", "#F59E0B", "#10B981", "#7C3AED", "#EC4899", "#38BDF8"];
+      const pieces = Array.from({ length: 90 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        w: Math.random() * 8 + 5,
+        h: Math.random() * 5 + 4,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        vy: Math.random() * 3 + 1.8,
+        vx: Math.random() * 1.8 - 0.9,
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.14
+      }));
+
+      let tick = 0;
+      const loop = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.vy;
+          p.x += p.vx + Math.sin(tick * 0.03 + p.rot) * 0.4;
+          p.rot += p.vrot;
+          if (p.y > canvas.height + 20 && tick < 200) {
+            p.y = -15;
+            p.x = Math.random() * canvas.width;
+          }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        tick++;
+        if (tick < 320) {
+          confettiFrameId = requestAnimationFrame(loop);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+      confettiFrameId = requestAnimationFrame(loop);
+    }
+
+    function stopConfetti() {
+      if (confettiFrameId) {
+        cancelAnimationFrame(confettiFrameId);
+        confettiFrameId = null;
+      }
+      const canvas = document.getElementById("confetti-canvas");
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  </script>
+</body>
+</html>
