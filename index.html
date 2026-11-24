@@ -331,8 +331,6 @@
       lmsName: "Mr.spena English Class",
       schoolName: "SMP Negeri 6 Blitar",
       questionsPerPage: 10,
-      kahootUrl: "https://kahoot.it/",
-      quizizzUrl: "https://quizizz.com/join"
     };
 
     const STORAGE_KEY = "mrspena_lms_clean_v1";
@@ -1138,7 +1136,7 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // --- TAB 1: MATERI, VIDEO YOUTUBE, 3D FLASHCARDS & KAHOOT/QUIZIZZ ---
+    // --- TAB 1: MATERI, VIDEO YOUTUBE & 3D FLASHCARDS ---
     function renderMaterialTab(mod) {
       return `
         <!-- Ringkasan Materi -->
@@ -1217,36 +1215,6 @@
                 </div>
               </div>
             `).join("")}
-          </div>
-        </div>
-
-        <!-- Arena Tantangan Eksternal: Kahoot! & Quizizz -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-soft space-y-3.5">
-          <div>
-            <h3 class="text-base font-extrabold text-slate-900">Arena Tantangan Eksternal</h3>
-            <p class="text-xs text-slate-500">Latihan tambahan seru bersama teman kelas</p>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-3">
-            <a href="${CONFIG.kahootUrl}" target="_blank" rel="noopener noreferrer"
-               class="flex items-center justify-between gap-3 p-4 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100/70 transition">
-              <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg shrink-0">🎮</span>
-                <div>
-                  <div class="text-sm font-extrabold text-purple-900">Kahoot!</div>
-                  <div class="text-xs text-purple-700">Buka kuis interaktif ↗</div>
-                </div>
-              </div>
-            </a>
-            <a href="${CONFIG.quizizzUrl}" target="_blank" rel="noopener noreferrer"
-               class="flex items-center justify-between gap-3 p-4 rounded-xl border border-fuchsia-200 bg-fuchsia-50/70 hover:bg-fuchsia-100/70 transition">
-              <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-fuchsia-600 text-white flex items-center justify-center text-lg shrink-0">⚡</span>
-                <div>
-                  <div class="text-sm font-extrabold text-fuchsia-900">Quizizz</div>
-                  <div class="text-xs text-fuchsia-700">Gabung latihan kuis ↗</div>
-                </div>
-              </div>
-            </a>
           </div>
         </div>
 
